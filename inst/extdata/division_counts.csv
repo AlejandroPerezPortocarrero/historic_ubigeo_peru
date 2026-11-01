@@ -1,0 +1,210 @@
+"level","inei","department","census_year","date","n_departments","n_provinces","n_districts"
+"national",,"PERU",1940,1940-06-09,22,122,1064
+"national",,"PERU",1961,1961-07-02,23,144,1491
+"national",,"PERU",1972,1972-06-04,23,150,1676
+"national",,"PERU",1981,1981-07-12,24,153,1680
+"national",,"PERU",1993,1993-07-11,24,188,1793
+"national",,"PERU",2005,2005-08-03,24,195,1811
+"national",,"PERU",2007,2007-10-21,24,195,1833
+"national",,"PERU",2017,2017-10-22,24,196,1874
+"national",,"PERU",,2019-12-31,24,196,1874
+"department","010000","Amazonas",1940,1940-06-09,,4,56
+"department","010000","Amazonas",1961,1961-07-02,,5,74
+"department","010000","Amazonas",1972,1972-06-04,,5,77
+"department","010000","Amazonas",1981,1981-07-12,,5,78
+"department","010000","Amazonas",1993,1993-07-11,,7,83
+"department","010000","Amazonas",2005,2005-08-03,,7,83
+"department","010000","Amazonas",2007,2007-10-21,,7,84
+"department","010000","Amazonas",2017,2017-10-22,,7,84
+"department","020000","Áncash",1940,1940-06-09,,10,102
+"department","020000","Áncash",1961,1961-07-02,,15,142
+"department","020000","Áncash",1972,1972-06-04,,16,154
+"department","020000","Áncash",1981,1981-07-12,,16,154
+"department","020000","Áncash",1993,1993-07-11,,20,165
+"department","020000","Áncash",2005,2005-08-03,,20,166
+"department","020000","Áncash",2007,2007-10-21,,20,166
+"department","020000","Áncash",2017,2017-10-22,,20,166
+"department","030000","Apurímac",1940,1940-06-09,,5,36
+"department","030000","Apurímac",1961,1961-07-02,,6,58
+"department","030000","Apurímac",1972,1972-06-04,,6,69
+"department","030000","Apurímac",1981,1981-07-12,,6,69
+"department","030000","Apurímac",1993,1993-07-11,,7,76
+"department","030000","Apurímac",2005,2005-08-03,,7,80
+"department","030000","Apurímac",2007,2007-10-21,,7,80
+"department","030000","Apurímac",2017,2017-10-22,,7,84
+"department","040000","Arequipa",1940,1940-06-09,,8,84
+"department","040000","Arequipa",1961,1961-07-02,,8,101
+"department","040000","Arequipa",1972,1972-06-04,,8,105
+"department","040000","Arequipa",1981,1981-07-12,,8,105
+"department","040000","Arequipa",1993,1993-07-11,,8,107
+"department","040000","Arequipa",2005,2005-08-03,,8,109
+"department","040000","Arequipa",2007,2007-10-21,,8,109
+"department","040000","Arequipa",2017,2017-10-22,,8,109
+"department","050000","Ayacucho",1940,1940-06-09,,7,68
+"department","050000","Ayacucho",1961,1961-07-02,,7,86
+"department","050000","Ayacucho",1972,1972-06-04,,7,102
+"department","050000","Ayacucho",1981,1981-07-12,,7,102
+"department","050000","Ayacucho",1993,1993-07-11,,11,109
+"department","050000","Ayacucho",2005,2005-08-03,,11,111
+"department","050000","Ayacucho",2007,2007-10-21,,11,111
+"department","050000","Ayacucho",2017,2017-10-22,,11,119
+"department","060000","Cajamarca",1940,1940-06-09,,8,73
+"department","060000","Cajamarca",1961,1961-07-02,,9,98
+"department","060000","Cajamarca",1972,1972-06-04,,11,110
+"department","060000","Cajamarca",1981,1981-07-12,,11,109
+"department","060000","Cajamarca",1993,1993-07-11,,13,125
+"department","060000","Cajamarca",2005,2005-08-03,,13,127
+"department","060000","Cajamarca",2007,2007-10-21,,13,127
+"department","060000","Cajamarca",2017,2017-10-22,,13,127
+"department","070000","Prov. Const. del Callao",1940,1940-06-09,,1,3
+"department","070000","Prov. Const. del Callao",1961,1961-07-02,,1,3
+"department","070000","Prov. Const. del Callao",1972,1972-06-04,,1,6
+"department","070000","Prov. Const. del Callao",1981,1981-07-12,,1,6
+"department","070000","Prov. Const. del Callao",1993,1993-07-11,,1,6
+"department","070000","Prov. Const. del Callao",2005,2005-08-03,,1,6
+"department","070000","Prov. Const. del Callao",2007,2007-10-21,,1,6
+"department","070000","Prov. Const. del Callao",2017,2017-10-22,,1,7
+"department","080000","Cusco",1940,1940-06-09,,13,71
+"department","080000","Cusco",1961,1961-07-02,,13,92
+"department","080000","Cusco",1972,1972-06-04,,13,101
+"department","080000","Cusco",1981,1981-07-12,,13,101
+"department","080000","Cusco",1993,1993-07-11,,13,106
+"department","080000","Cusco",2005,2005-08-03,,13,108
+"department","080000","Cusco",2007,2007-10-21,,13,108
+"department","080000","Cusco",2017,2017-10-22,,13,112
+"department","090000","Huancavelica",1940,1940-06-09,,4,43
+"department","090000","Huancavelica",1961,1961-07-02,,5,81
+"department","090000","Huancavelica",1972,1972-06-04,,5,90
+"department","090000","Huancavelica",1981,1981-07-12,,5,90
+"department","090000","Huancavelica",1993,1993-07-11,,7,93
+"department","090000","Huancavelica",2005,2005-08-03,,7,94
+"department","090000","Huancavelica",2007,2007-10-21,,7,94
+"department","090000","Huancavelica",2017,2017-10-22,,7,100
+"department","100000","Huánuco",1940,1940-06-09,,6,42
+"department","100000","Huánuco",1961,1961-07-02,,7,66
+"department","100000","Huánuco",1972,1972-06-04,,7,68
+"department","100000","Huánuco",1981,1981-07-12,,7,68
+"department","100000","Huánuco",1993,1993-07-11,,9,74
+"department","100000","Huánuco",2005,2005-08-03,,11,76
+"department","100000","Huánuco",2007,2007-10-21,,11,76
+"department","100000","Huánuco",2017,2017-10-22,,11,84
+"department","110000","Ica",1940,1940-06-09,,3,20
+"department","110000","Ica",1961,1961-07-02,,4,32
+"department","110000","Ica",1972,1972-06-04,,5,39
+"department","110000","Ica",1981,1981-07-12,,5,39
+"department","110000","Ica",1993,1993-07-11,,5,43
+"department","110000","Ica",2005,2005-08-03,,5,43
+"department","110000","Ica",2007,2007-10-21,,5,43
+"department","110000","Ica",2017,2017-10-22,,5,43
+"department","120000","Junín",1940,1940-06-09,,5,72
+"department","120000","Junín",1961,1961-07-02,,6,103
+"department","120000","Junín",1972,1972-06-04,,7,120
+"department","120000","Junín",1981,1981-07-12,,8,122
+"department","120000","Junín",1993,1993-07-11,,8,123
+"department","120000","Junín",2005,2005-08-03,,9,123
+"department","120000","Junín",2007,2007-10-21,,9,123
+"department","120000","Junín",2017,2017-10-22,,9,124
+"department","130000","La Libertad",1940,1940-06-09,,7,55
+"department","130000","La Libertad",1961,1961-07-02,,7,66
+"department","130000","La Libertad",1972,1972-06-04,,7,72
+"department","130000","La Libertad",1981,1981-07-12,,7,72
+"department","130000","La Libertad",1993,1993-07-11,,10,80
+"department","130000","La Libertad",2005,2005-08-03,,12,83
+"department","130000","La Libertad",2007,2007-10-21,,12,83
+"department","130000","La Libertad",2017,2017-10-22,,12,83
+"department","140000","Lambayeque",1940,1940-06-09,,2,25
+"department","140000","Lambayeque",1961,1961-07-02,,3,31
+"department","140000","Lambayeque",1972,1972-06-04,,3,32
+"department","140000","Lambayeque",1981,1981-07-12,,3,32
+"department","140000","Lambayeque",1993,1993-07-11,,3,33
+"department","140000","Lambayeque",2005,2005-08-03,,3,38
+"department","140000","Lambayeque",2007,2007-10-21,,3,38
+"department","140000","Lambayeque",2017,2017-10-22,,3,38
+"department","150000","Lima",1940,1940-06-09,,7,101
+"department","150000","Lima",1961,1961-07-02,,7,141
+"department","150000","Lima",1972,1972-06-04,,7,165
+"department","150000","Lima",1981,1981-07-12,,8,166
+"department","150000","Lima",1993,1993-07-11,,10,171
+"department","150000","Lima",2005,2005-08-03,,10,171
+"department","150000","Lima",2007,2007-10-21,,10,171
+"department","150000","Lima",2017,2017-10-22,,10,171
+"department","160000","Loreto",1940,1940-06-09,,3,22
+"department","160000","Loreto",1961,1961-07-02,,6,46
+"department","160000","Loreto",1972,1972-06-04,,6,52
+"department","160000","Loreto",1981,1981-07-12,,5,37
+"department","160000","Loreto",1993,1993-07-11,,6,45
+"department","160000","Loreto",2005,2005-08-03,,7,51
+"department","160000","Loreto",2007,2007-10-21,,7,51
+"department","160000","Loreto",2017,2017-10-22,,8,53
+"department","170000","Madre de Dios",1940,1940-06-09,,3,8
+"department","170000","Madre de Dios",1961,1961-07-02,,3,8
+"department","170000","Madre de Dios",1972,1972-06-04,,3,9
+"department","170000","Madre de Dios",1981,1981-07-12,,3,9
+"department","170000","Madre de Dios",1993,1993-07-11,,3,9
+"department","170000","Madre de Dios",2005,2005-08-03,,3,11
+"department","170000","Madre de Dios",2007,2007-10-21,,3,11
+"department","170000","Madre de Dios",2017,2017-10-22,,3,11
+"department","180000","Moquegua",1940,1940-06-09,,2,9
+"department","180000","Moquegua",1961,1961-07-02,,2,16
+"department","180000","Moquegua",1972,1972-06-04,,3,19
+"department","180000","Moquegua",1981,1981-07-12,,3,20
+"department","180000","Moquegua",1993,1993-07-11,,3,20
+"department","180000","Moquegua",2005,2005-08-03,,3,20
+"department","180000","Moquegua",2007,2007-10-21,,3,20
+"department","180000","Moquegua",2017,2017-10-22,,3,20
+"department","190000","Pasco",1940,1940-06-09,,,
+"department","190000","Pasco",1961,1961-07-02,,3,25
+"department","190000","Pasco",1972,1972-06-04,,3,27
+"department","190000","Pasco",1981,1981-07-12,,3,27
+"department","190000","Pasco",1993,1993-07-11,,3,28
+"department","190000","Pasco",2005,2005-08-03,,3,28
+"department","190000","Pasco",2007,2007-10-21,,3,28
+"department","190000","Pasco",2017,2017-10-22,,3,29
+"department","200000","Piura",1940,1940-06-09,,6,39
+"department","200000","Piura",1961,1961-07-02,,7,49
+"department","200000","Piura",1972,1972-06-04,,7,61
+"department","200000","Piura",1981,1981-07-12,,7,61
+"department","200000","Piura",1993,1993-07-11,,7,64
+"department","200000","Piura",2005,2005-08-03,,8,64
+"department","200000","Piura",2007,2007-10-21,,8,64
+"department","200000","Piura",2017,2017-10-22,,8,65
+"department","210000","Puno",1940,1940-06-09,,9,83
+"department","210000","Puno",1961,1961-07-02,,9,89
+"department","210000","Puno",1972,1972-06-04,,9,95
+"department","210000","Puno",1981,1981-07-12,,9,95
+"department","210000","Puno",1993,1993-07-11,,13,106
+"department","210000","Puno",2005,2005-08-03,,13,109
+"department","210000","Puno",2007,2007-10-21,,13,109
+"department","210000","Puno",2017,2017-10-22,,13,110
+"department","220000","San Martín",1940,1940-06-09,,6,35
+"department","220000","San Martín",1961,1961-07-02,,6,53
+"department","220000","San Martín",1972,1972-06-04,,6,69
+"department","220000","San Martín",1981,1981-07-12,,6,69
+"department","220000","San Martín",1993,1993-07-11,,10,77
+"department","220000","San Martín",2005,2005-08-03,,10,77
+"department","220000","San Martín",2007,2007-10-21,,10,77
+"department","220000","San Martín",2017,2017-10-22,,10,77
+"department","230000","Tacna",1940,1940-06-09,,2,12
+"department","230000","Tacna",1961,1961-07-02,,2,22
+"department","230000","Tacna",1972,1972-06-04,,2,23
+"department","230000","Tacna",1981,1981-07-12,,2,23
+"department","230000","Tacna",1993,1993-07-11,,4,26
+"department","230000","Tacna",2005,2005-08-03,,4,27
+"department","230000","Tacna",2007,2007-10-21,,4,27
+"department","230000","Tacna",2017,2017-10-22,,4,28
+"department","240000","Tumbes",1940,1940-06-09,,1,5
+"department","240000","Tumbes",1961,1961-07-02,,3,9
+"department","240000","Tumbes",1972,1972-06-04,,3,11
+"department","240000","Tumbes",1981,1981-07-12,,3,11
+"department","240000","Tumbes",1993,1993-07-11,,3,12
+"department","240000","Tumbes",2005,2005-08-03,,3,12
+"department","240000","Tumbes",2007,2007-10-21,,3,13
+"department","240000","Tumbes",2017,2017-10-22,,3,13
+"department","250000","Ucayali",1940,1940-06-09,,,
+"department","250000","Ucayali",1961,1961-07-02,,,
+"department","250000","Ucayali",1972,1972-06-04,,,
+"department","250000","Ucayali",1981,1981-07-12,,2,15
+"department","250000","Ucayali",1993,1993-07-11,,4,12
+"department","250000","Ucayali",2005,2005-08-03,,4,14
+"department","250000","Ucayali",2007,2007-10-21,,4,15
+"department","250000","Ucayali",2017,2017-10-22,,4,17
