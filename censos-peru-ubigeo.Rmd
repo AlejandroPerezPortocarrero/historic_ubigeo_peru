@@ -1,0 +1,166 @@
+---
+title: "Unidades territoriales del Perú en los censos 1981–2025: construcción de la base"
+subtitle: "Departamentos, provincias y distritos con ubigeo y fecha de creación"
+author: "Alejandro Pérez Portocarrero"
+date: "`r format(Sys.Date(), '%d/%m/%Y')`"
+output:
+  html_document:
+    toc: true
+    toc_float: true
+    number_sections: true
+    df_print: kable
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE)
+library(readr)
+library(dplyr)
+leer <- function(f) read_csv(file.path("data", "processed", f),
+                             col_types = cols(.default = col_character()))
+```
+
+# Objetivo
+
+Este repositorio arma una base armonizada sobre la **presencia de cada departamento, provincia y distrito** en los censos nacionales de población de **1981, 1993, 2007, 2017 y 2025**. Cada unidad lleva su **código de ubigeo** y su **fecha y dispositivo legal de creación**. La idea es facilitar el empalme de información censal entre años, por ejemplo para construir paneles distritales que tengan en cuenta la creación de distritos.
+
+El marco de referencia es la división político-administrativa del Censo 2025, y el ubigeo 2025 sirve como identificador único.
+
+# Fuentes
+
+```{r fuentes, echo=FALSE}
+tibble::tribble(
+  ~Fuente, ~Uso, ~Archivo,
+  "INEI. Listado de ubigeos del Censo 2025",
+    "Marco de unidades vigentes", "data/raw/ubigeo_censo2025.xlsx",
+  "INEI (1999). Perú: Directorio Nacional de Municipalidades Provinciales y Distritales 1999, cuadro X.3",
+    "Dispositivo legal y fecha de creación de distritos existentes en 1999", "data/raw/inei_lib0362/dis-*.txt"
+)
+```
+
+## INEI (1999): Directorio Nacional de Municipalidades
+
+> Instituto Nacional de Estadística e Informática (1999). *Perú: Directorio Nacional de Municipalidades Provinciales y Distritales 1999*. Lima: INEI. Disponible en: <https://proyectos.inei.gob.pe/web/biblioineipub/bancopub/Est/Lib0362/indice.htm>
+
+Para cada departamento, la publicación incluye el cuadro *"Dispositivo legal de creación, población total, superficie, densidad poblacional y población electoral de los distritos: 1999"*. Para Lima es el cuadro 15.3 (<https://proyectos.inei.gob.pe/web/biblioineipub/bancopub/Est/Lib0362/dis-lima.htm>). Las páginas de los demás departamentos siguen el patrón `dis-<código>.htm` (`dis-amaz.htm`, `dis-anca.htm`, …, `dis-ucay.htm`).
+
+Por cada distrito, el cuadro reporta:
+
+- el tipo de dispositivo (Ley, Decreto, Decreto Ley, Ley Regional), su número y su fecha;
+- `EPOCA INDEP.` para los distritos que existen desde la época de la Independencia, sin norma de creación identificada;
+- población total al 30/06/1998, superficie (km²), densidad y población electoral al 04/01/1999.
+
+**Alcance.** Solo cubre los distritos que existían en 1999. Los creados después necesitan otra fuente, como las normas publicadas en *El Peruano* o la información de demarcación territorial de la PCM.
+
+# Etapa 1: unidades del Censo 2025
+
+Script: `scripts/01_unidades_2025.py`.
+
+```{r u25}
+u25 <- leer("unidades_2025.csv")
+count(u25, nivel)
+```
+
+Verificaciones del script:
+
+- los ubigeos son únicos;
+- cada distrito tiene su provincia y cada provincia tiene su departamento;
+- ninguna provincia se queda sin distritos.
+
+# Etapa 2: fecha de creación (INEI 1999)
+
+Script: `scripts/02_inei_1999_creacion.py`. El script lee el texto copiado de cada `dis-<código>.htm`, lo convierte en una tabla y la empalma con el ubigeo 2025 por departamento, provincia y nombre normalizado (mayúsculas y sin tildes, conservando la Ñ).
+
+```{r inei}
+inei <- leer("inei1999_creacion_distritos.csv")
+inei |>
+  group_by(cod_dep) |>
+  summarise(distritos_1999 = n(),
+            empalmados = sum(!is.na(ubigeo)),
+            epoca_indep = sum(epoca_independencia == "1"),
+            con_fecha = sum(!is.na(fecha_creacion)))
+```
+
+## Equivalencias de nombres
+
+Algunos distritos tienen otro nombre en 1999 que en 2025. Las equivalencias están codificadas en `EQUIV_DISTRITOS`:
+
+| Dep. | Provincia | Nombre 1999 | Nombre 2025 | Ubigeo 2025 |
+|---|---|---|---|---|
+| Lima | Lima | Magdalena Vieja | Pueblo Libre | 150121 |
+| Lima | Huarochirí | Laraos | San Pedro de Laraos | 150712 |
+| Lima | Yauyos | Ayauca | Allauca | 151003 |
+
+## Observaciones sobre la fuente
+
+Los valores que parecen errados se mantienen tal como están en la fuente y se marcan en la columna `observacion`:
+
+```{r obs}
+inei |> filter(!is.na(observacion)) |>
+  select(ubigeo, provincia_1999, distrito_1999, dispositivo_numero, fecha_texto, observacion)
+```
+
+Además, la página original tiene problemas de codificación (por ejemplo, `CAÃ‘ETE`), que el script corrige.
+
+## Distritos de Lima por período de creación
+
+```{r periodos}
+inei |>
+  filter(cod_dep == "15") |>
+  mutate(periodo = case_when(
+    epoca_independencia == "1" ~ "Época de la Independencia",
+    fecha_creacion < "1900-01-01" ~ "1821–1899",
+    fecha_creacion < "1950-01-01" ~ "1900–1949",
+    fecha_creacion < "1981-07-12" ~ "1950–censo 1981",
+    TRUE ~ "Después del censo 1981")) |>
+  count(periodo)
+```
+
+Los distritos de Lima creados después del Censo de 1981 son los siguientes. Por su fecha de creación no podrían aparecer en ese censo, y esto tendrá que contrastarse con los listados censales en la Etapa 3:
+
+```{r post1981}
+inei |>
+  filter(cod_dep == "15", fecha_creacion >= "1981-07-12") |>
+  select(ubigeo, provincia_1999, distrito_1999, dispositivo_tipo,
+         dispositivo_numero, fecha_creacion) |>
+  arrange(fecha_creacion)
+```
+
+# Tabla maestra
+
+`data/processed/unidades_territoriales.csv` reúne todo lo anterior:
+
+```{r maestra}
+m <- leer("unidades_territoriales.csv")
+m |>
+  filter(nivel == "distrito") |>
+  mutate(departamento = substr(ubigeo, 1, 2)) |>
+  group_by(departamento) |>
+  summarise(distritos = n(), con_fuente_creacion = sum(!is.na(fuente_creacion))) |>
+  filter(con_fuente_creacion > 0)
+```
+
+| Variable | Descripción |
+|---|---|
+| `ubigeo` | Código 2025 de 6 dígitos (texto) |
+| `nivel` | departamento / provincia / distrito |
+| `ubigeo_padre` | Ubigeo de la unidad superior |
+| `nombre`, `nombre_norm` | Nombre en la fuente y nombre normalizado |
+| `fecha_creacion` | AAAA-MM-DD |
+| `dispositivo_legal` | Tipo y número de la norma de creación |
+| `epoca_independencia` | 1 si la fuente indica "Época de la Independencia" |
+| `fuente_creacion` | Fuente de la fecha de creación |
+| `observacion` | Advertencias sobre el dato |
+| `censo_AAAA` | 1 si la unidad fue empadronada en ese censo |
+
+# Pendientes
+
+1. Incorporar los cuadros `dis-*.htm` de los otros 24 departamentos (el parser ya los acepta).
+2. Fechas de creación de los distritos creados entre 1999 y 2025, y de provincias y departamentos.
+3. Presencia en los censos de 2017 y 2007 a partir de los listados de ubigeo del INEI.
+4. Presencia en los censos de 1993 y 1981, incluida la tabla de equivalencias de códigos antiguos.
+
+# Referencias
+
+Instituto Nacional de Estadística e Informática (1999). *Perú: Directorio Nacional de Municipalidades Provinciales y Distritales 1999*. Lima: INEI. <https://proyectos.inei.gob.pe/web/biblioineipub/bancopub/Est/Lib0362/indice.htm>
+
+Instituto Nacional de Estadística e Informática (2025). *Censos Nacionales 2025: listado de ubigeos*. Lima: INEI.

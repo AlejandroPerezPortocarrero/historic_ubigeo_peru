@@ -9,7 +9,7 @@ El objetivo es facilitar el empalme de microdatos censales entre años, por ejem
 | Etapa | Descripción | Estado |
 |---|---|---|
 | 1 | Unidades existentes en el Censo 2025 (marco de referencia) | ✅ |
-| 2 | Fecha de creación y dispositivo legal de cada unidad | ⏳ |
+| 2 | Fecha de creación y dispositivo legal de cada unidad | 🔄 Lima completo (INEI 1999) |
 | 3 | Presencia en los censos 2017 y 2007 | ⏳ |
 | 4 | Presencia en los censos 1993 y 1981 | ⏳ |
 | 5 | Unidades desaparecidas, fusionadas o recodificadas (tabla de equivalencias) | ⏳ |
@@ -30,12 +30,16 @@ El objetivo es facilitar el empalme de microdatos censales entre años, por ejem
 data/
   raw/
     ubigeo_censo2025.xlsx          # listado de ubigeos del Censo 2025 (INEI)
+    inei_lib0362/dis-*.txt         # cuadros de creación de distritos, INEI 1999
   processed/
     unidades_2025.csv              # los 3 niveles, formato largo
     distritos_2025.csv             # un distrito por fila, con nombres de dep. y prov.
+    inei1999_creacion_distritos.csv  # cuadros INEI 1999 parseados y empalmados al ubigeo 2025
     unidades_territoriales.csv     # tabla maestra (se completa por etapas)
 scripts/
   01_unidades_2025.py
+  02_inei_1999_creacion.py
+censos-peru-ubigeo.Rmd             # documentación de la construcción y fuentes
 ```
 
 ## Diccionario de la tabla maestra (`unidades_territoriales.csv`)
@@ -49,6 +53,9 @@ scripts/
 | `nombre_norm` | Nombre en mayúsculas, sin tildes (conserva la Ñ), para hacer cruces |
 | `fecha_creacion` | Fecha de creación (AAAA-MM-DD) |
 | `dispositivo_legal` | Ley o decreto de creación |
+| `epoca_independencia` | 1 si la fuente indica "Época de la Independencia" (sin norma de creación) |
+| `fuente_creacion` | Fuente de la fecha de creación |
+| `observacion` | Advertencias sobre el dato |
 | `censo_AAAA` | 1 si la unidad existía (fue empadronada) en ese censo, 0 si no |
 
 ## Reproducir
@@ -56,9 +63,11 @@ scripts/
 ```bash
 pip install -r requirements.txt
 python scripts/01_unidades_2025.py
+python scripts/02_inei_1999_creacion.py
+Rscript -e 'rmarkdown::render("censos-peru-ubigeo.Rmd")'
 ```
 
 ## Notas
 
 - Los ubigeos del INEI han cambiado entre censos (por ejemplo, distritos recodificados al pasar a una provincia nueva). Por eso el código 2025 funciona como identificador de referencia y las equivalencias con códigos anteriores se documentarán en la etapa 5.
-- Fuentes: INEI (Censos Nacionales), Sistema de Información sobre Demarcación Territorial de la PCM y normas legales publicadas en *El Peruano*.
+- Fuentes: INEI (1999), *Perú: Directorio Nacional de Municipalidades Provinciales y Distritales 1999* (https://proyectos.inei.gob.pe/web/biblioineipub/bancopub/Est/Lib0362/indice.htm); INEI (Censos Nacionales), Sistema de Información sobre Demarcación Territorial de la PCM y normas legales publicadas en *El Peruano*.
