@@ -1,73 +1,108 @@
-# Censos del Perú y ubigeo: departamentos, provincias y distritos (1981–2025)
+# ubigeocensos (R package)
 
-Base de datos armonizada sobre la **presencia de cada unidad territorial** (departamento, provincia y distrito) en los censos nacionales de población del Perú de **1981, 1993, 2007, 2017 y 2025**, con su **código de ubigeo** y su **fecha y dispositivo legal de creación**.
+Departments, provinces and districts of Peru in the 1981, 1993, 2007, 2017 and 2025 population censuses, with their UBIGEO code and date of creation.
 
-El objetivo es facilitar el empalme de microdatos censales entre años, por ejemplo para construir paneles distritales o tener en cuenta la creación de distritos nuevos.
+## Installation
 
-## Estado del proyecto
+This package is not on CRAN. You can install it with `devtools`:
 
-| Etapa | Descripción | Estado |
+```r
+devtools::install_github("alejandroperezportocarrero/ubigeocensos")
+```
+
+## Note
+
+If you would rather use CSV files, they are in [`inst/extdata/`](inst/extdata).
+
+## Motivation
+
+Peru's political-administrative division has changed a lot over the last four decades. Many districts and provinces were created between censuses, and some UBIGEO codes changed when a district moved to a new province. Linking census data across years (for example, building district panels for 1981–2025) therefore requires knowing **which units existed in each census** and **when each unit was created**.
+
+The package uses the units of the **2025 Census** as its reference frame and their INEI UBIGEO as the identifier. For each unit it records:
+
+- **Date and legal instrument of creation**: the law, decree or regional law that created the unit, or whether it dates from the Independence era. The current source is INEI (1999), *Perú: Directorio Nacional de Municipalidades Provinciales y Distritales 1999*.
+- **Presence in each census**: whether the unit was enumerated in 1981, 1993, 2007, 2017 and 2025.
+
+The construction steps and sources are documented in the vignette `vignette("construction", package = "ubigeocensos")`.
+
+## Status
+
+| Step | Description | Status |
 |---|---|---|
-| 1 | Unidades existentes en el Censo 2025 (marco de referencia) | ✅ |
-| 2 | Fecha de creación y dispositivo legal de cada unidad | 🔄 Lima completo (INEI 1999) |
-| 3 | Presencia en los censos 2017 y 2007 | ⏳ |
-| 4 | Presencia en los censos 1993 y 1981 | ⏳ |
-| 5 | Unidades desaparecidas, fusionadas o recodificadas (tabla de equivalencias) | ⏳ |
+| 1 | Units in the 2025 Census (25 departments, 196 provinces, 1,892 districts) | ✅ |
+| 2 | Creation date and legal instrument | 🔄 Lima done (171 districts, INEI 1999) |
+| 3 | Presence in the 2017 and 2007 censuses | ⏳ |
+| 4 | Presence in the 1993 and 1981 censuses | ⏳ |
+| 5 | Crosswalk for renamed, merged or recoded units | ⏳ |
 
-## Unidades en el Censo 2025
+## Data structure
 
-| Nivel | N.º |
-|---|---:|
-| Departamentos* | 25 |
-| Provincias | 196 |
-| Distritos | 1 892 |
+### For Departments (`departments`)
 
-\* Incluye la Provincia Constitucional del Callao (07). Lima (15) agrupa Lima Metropolitana (provincia 1501) y Lima Provincias.
-
-## Estructura
-
-```
-data/
-  raw/
-    ubigeo_censo2025.xlsx          # listado de ubigeos del Censo 2025 (INEI)
-    inei_lib0362/dis-*.txt         # cuadros de creación de distritos, INEI 1999
-  processed/
-    unidades_2025.csv              # los 3 niveles, formato largo
-    distritos_2025.csv             # un distrito por fila, con nombres de dep. y prov.
-    inei1999_creacion_distritos.csv  # cuadros INEI 1999 parseados y empalmados al ubigeo 2025
-    unidades_territoriales.csv     # tabla maestra (se completa por etapas)
-scripts/
-  01_unidades_2025.py
-  02_inei_1999_creacion.py
-censos-peru-ubigeo.Rmd             # documentación de la construcción y fuentes
-```
-
-## Diccionario de la tabla maestra (`unidades_territoriales.csv`)
-
-| Variable | Descripción |
+| Field | Description |
 |---|---|
-| `ubigeo` | Código de 6 dígitos (DDPPdd) según el Censo 2025. Se lee siempre como texto para conservar los ceros iniciales. |
-| `nivel` | `departamento`, `provincia` o `distrito` |
-| `ubigeo_padre` | Ubigeo de la unidad inmediatamente superior |
-| `nombre` | Nombre tal como aparece en la fuente |
-| `nombre_norm` | Nombre en mayúsculas, sin tildes (conserva la Ñ), para hacer cruces |
-| `fecha_creacion` | Fecha de creación (AAAA-MM-DD) |
-| `dispositivo_legal` | Ley o decreto de creación |
-| `epoca_independencia` | 1 si la fuente indica "Época de la Independencia" (sin norma de creación) |
-| `fuente_creacion` | Fuente de la fecha de creación |
-| `observacion` | Advertencias sobre el dato |
-| `censo_AAAA` | 1 si la unidad existía (fue empadronada) en ese censo, 0 si no |
+| inei | UBIGEO (INEI, 2025 Census) |
+| department | Name of the department |
+| created_date | Date of creation |
+| legal_instrument | Type and number of the legal instrument of creation |
+| independence_era | `TRUE` if the unit dates from the Independence era (no instrument) |
+| creation_source | Source of the creation data |
+| note | Warnings about the data |
+| census_1981 … census_2025 | 1 if enumerated in that census, 0 if not, `NA` if not yet determined |
 
-## Reproducir
+The department count (25) includes the Constitutional Province of Callao (`070000`). Lima (`150000`) includes both Metropolitan Lima (province `150100`) and the provinces of Lima.
 
-```bash
-pip install -r requirements.txt
-python scripts/01_unidades_2025.py
-python scripts/02_inei_1999_creacion.py
-Rscript -e 'rmarkdown::render("censos-peru-ubigeo.Rmd")'
+### For Provinces (`provinces`)
+
+| Field | Description |
+|---|---|
+| inei | UBIGEO (INEI, 2025 Census) |
+| department | Name of the department |
+| province | Name of the province |
+| created_date … census_2025 | As for departments |
+
+### For Districts (`districts`)
+
+| Field | Description |
+|---|---|
+| inei | UBIGEO (INEI, 2025 Census) |
+| department | Name of the department |
+| province | Name of the province |
+| district | Name of the district |
+| created_date … census_2025 | As for departments |
+
+### Legal creation of districts, INEI 1999 (`inei1999_districts`)
+
+The source table, parsed and matched to the 2025 UBIGEO.
+
+| Field | Description |
+|---|---|
+| inei | UBIGEO (INEI, 2025 Census) of the matching district |
+| dept | Two-digit department code |
+| province_1999, district_1999 | Names as published in 1999 |
+| instrument_type | LEY, DECRETO, DECRETO LEY, LEY REGIONAL |
+| instrument_number | Number of the instrument (`S/N` = unnumbered) |
+| date_text | Date as published |
+| created_date | Date of creation (ISO 8601) |
+| independence_era | `TRUE` if published as "EPOCA INDEP." |
+| pop_1998 | Total population at 30/06/1998 |
+| surface | Surface in km² |
+| pop_density_1998 | Population density (inhabitants per km²) |
+| electoral_pop_1999 | Electoral population at 04/01/1999 |
+| note | Warnings about the data |
+
+## Rebuilding the data
+
+```r
+source("data-raw/make_datasets.R")
+devtools::document()
 ```
 
-## Notas
+## Sources
 
-- Los ubigeos del INEI han cambiado entre censos (por ejemplo, distritos recodificados al pasar a una provincia nueva). Por eso el código 2025 funciona como identificador de referencia y las equivalencias con códigos anteriores se documentarán en la etapa 5.
-- Fuentes: INEI (1999), *Perú: Directorio Nacional de Municipalidades Provinciales y Distritales 1999* (https://proyectos.inei.gob.pe/web/biblioineipub/bancopub/Est/Lib0362/indice.htm); INEI (Censos Nacionales), Sistema de Información sobre Demarcación Territorial de la PCM y normas legales publicadas en *El Peruano*.
+- INEI. List of UBIGEO codes, 2025 Census.
+- Instituto Nacional de Estadística e Informática (1999). *Perú: Directorio Nacional de Municipalidades Provinciales y Distritales 1999*. Lima: INEI. <https://proyectos.inei.gob.pe/web/biblioineipub/bancopub/Est/Lib0362/indice.htm>
+
+## License
+
+MIT
