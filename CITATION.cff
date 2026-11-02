@@ -27,6 +27,13 @@ references:
     year: 2020
     url: "https://www.inei.gob.pe/media/MenuRecursivo/publicaciones_digitales/Est/Lib1715/libro.pdf"
   - type: report
+    title: "Perú: Proyecciones de Población Total según Departamento, Provincia y Distrito, 2018 - 2022"
+    collection-title: "Boletín Especial Nº 27"
+    authors:
+      - name: "Instituto Nacional de Estadística e Informática"
+    year: 2022
+    url: "https://www.inei.gob.pe/media/MenuRecursivo/publicaciones_digitales/Est/Lib1860/libro.pdf"
+  - type: report
     title: "Perú: Directorio Nacional de Municipalidades Provinciales y Distritales 1999"
     authors:
       - name: "Instituto Nacional de Estadística e Informática"

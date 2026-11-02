@@ -27,6 +27,8 @@ districts_created_2020_2025
 }
 \description{
 The 18 districts in the 2025 Census frame that were created after
-31/12/2019 (1,892 - 1,874).
+31/12/2019 (1,892 - 1,874), with the exact date of their law. The 16
+created in 2020-2021 are also in \link{inei_districts_created} (year and law
+only); the build checks that both sources agree on the law and year.
 }
 \keyword{datasets}

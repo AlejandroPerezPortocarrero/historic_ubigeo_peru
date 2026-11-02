@@ -6,8 +6,8 @@
 #'
 #' Main datasets: [departments], [provinces], [districts].
 #' Source tables: [inei1999_districts], [division_counts],
-#' [inei2020_provinces_created], [inei2020_districts_created],
-#' [inei2020_district_origins], [districts_created_2020_2025].
+#' [inei_provinces_created], [inei_districts_created],
+#' [inei_district_origins], [districts_created_2020_2025].
 #'
 #' @keywords internal
 "_PACKAGE"

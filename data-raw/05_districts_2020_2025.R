@@ -1,7 +1,9 @@
-# Step 4: districts created after 31/12/2019 (not covered by INEI 2020)
+# Step 5: dates of districts created after 31/12/2019
 #
 # The 2025 frame has 1,892 districts and INEI (2020) reports 1,874 at
-# 31/12/2019, so 18 districts were created in 2020-2025. They are taken from:
+# 31/12/2019, so 18 districts were created in 2020-2025. INEI (2022) lists the
+# 16 created in 2020-2021 with year and law only; the exact dates of those 16,
+# and the 2 districts created after 2021, are taken from:
 #
 #   Jurado Nacional de Elecciones (2021). Resolución N.° 0913-2021-JNE,
 #     22 de noviembre de 2021, considerando 1.10 (16 districts created
@@ -26,6 +28,12 @@ districts_created_2020_2025$inei <- d25$inei[match(
   paste(districts_created_2020_2025$province, districts_created_2020_2025$district, sep = "|"), key25)]
 stopifnot(!anyNA(districts_created_2020_2025$inei),
           !any(districts_created_2020_2025$inei %in% inei2020_districts_created$inei))
+
+# Cross-check with INEI (2022): same districts and laws for 2020-2021
+x <- merge(districts_created_2020_2025, inei_districts_created, by = "inei")
+stopifnot(nrow(x) == 16, all(x$law_number.x == x$law_number.y),
+          all(as.integer(substr(x$date, 1, 4)) == x$year))
+stopifnot(setequal(x$inei, inei_districts_created$inei[inei_districts_created$year >= 2020]))
 districts_created_2020_2025$date <- as.Date(districts_created_2020_2025$date)
 districts_created_2020_2025 <- tibble::as_tibble(districts_created_2020_2025[, c(
   "inei", "department", "province", "district", "law_number", "date", "source")])
