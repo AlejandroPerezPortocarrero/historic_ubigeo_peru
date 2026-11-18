@@ -1,4 +1,4 @@
-# historic_ubigeo (R package ubigeocensos): Peruvian Territorial Units in the 1981-2025 Population Censuses
+# historic_ubigeo_peru (R package historicubigeo): Peruvian Territorial Units in the 1981-2025 Population Censuses
 
 Departments, provinces and districts of Peru across the 1981, 1993, 2007, 2017 and 2025 population censuses: their UBIGEO code in each census and in 2025, their date and legal instrument of creation, their population by sex and area (urban/rural) in each census, and a crosswalk to compare censuses on the same boundaries.
 
@@ -7,7 +7,7 @@ Departments, provinces and districts of Peru across the 1981, 1993, 2007, 2017 a
 This package is not on CRAN. You can install it with `devtools`:
 
 ```r
-devtools::install_github("alejandroperezportocarrero/historic_ubigeo")
+devtools::install_github("AlejandroPerezPortocarrero/historic_ubigeo_peru")
 ```
 
 ## Note
@@ -25,7 +25,7 @@ The package uses the units of the **2025 Census** as its reference frame and the
 - **The district in each census's own data**: whether each census's data have a record for the district (`enumerated_YYYY`), with the census's own code (`code_YYYY`), from the census microdata (1981–2017) and REDATAM tables (2025).
 - **Population in each census**: total, male, female, urban and rural population of every district, province and department (`census_population`, `census_population_totals`), and a crosswalk that links each census district to the 2025 districts and gives harmonised units to compare censuses on the same boundaries (`ubigeo_crosswalk`).
 
-The construction steps and sources are documented in the vignette `vignette("construction", package = "ubigeocensos")`.
+The construction steps and sources are documented in the vignette `vignette("construction", package = "historicubigeo")`.
 
 ## Status
 
@@ -99,7 +99,7 @@ One row per district and census.
 One row per district and census. It links each census district to a 2025 district (`inei`) and, for every 2025 district, gives the district of each earlier census it descends from (`unit_1981` … `unit_2017`). To compare two censuses on the same boundaries, aggregate both by the `unit_YYYY` of the earlier one:
 
 ```r
-library(ubigeocensos)
+library(historicubigeo)
 x <- merge(ubigeo_crosswalk, census_population, by = c("census", "ubigeo_census"))
 x <- subset(x, census %in% c(1993, 2017))
 aggregate(total ~ unit_1993 + census, data = x, FUN = sum)
@@ -143,7 +143,7 @@ The source table, parsed and matched to the 2025 UBIGEO.
 | `census_population`, `census_population_totals` | Population by sex and area of every district, province and department in each census, 1981–2025 | INEI census microdata (1981–2017) and REDATAM (2025) |
 | `ubigeo_crosswalk` | Census district codes linked to the 2025 districts, with harmonised units | Built from the census data |
 
-Census presence refers to the unit as identified in 2025. A district later split from another still counts as present in earlier censuses, with a larger territory; units abolished before 2025 are not included. See `vignette("construction", package = "ubigeocensos")`.
+Census presence refers to the unit as identified in 2025. A district later split from another still counts as present in earlier censuses, with a larger territory; units abolished before 2025 are not included. See `vignette("construction", package = "historicubigeo")`.
 
 ## Rebuilding the data
 

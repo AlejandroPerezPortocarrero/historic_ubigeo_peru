@@ -1,4 +1,4 @@
-#' ubigeocensos: Peruvian Territorial Units in the 1981-2025 Population Censuses
+#' historicubigeo: Peruvian Territorial Units in the 1981-2025 Population Censuses
 #'
 #' Datasets of the departments, provinces and districts of Peru with their
 #' 2025 UBIGEO code, creation date, legal instrument of creation and presence

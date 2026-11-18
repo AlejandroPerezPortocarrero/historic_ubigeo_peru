@@ -54,7 +54,7 @@ census, and the national and department counts at 31/12/2021 published by
 INEI (2022). Presence refers to the unit as identified in 2025: units that were
 split, merged or moved between departments keep their 2025 identity, and
 units abolished before 2025 are not included. See
-\code{vignette("construction", package = "ubigeocensos")}.
+\code{vignette("construction", package = "historicubigeo")}.
 
 \strong{Census data.} \code{enumerated_YYYY} and \code{code_YYYY} come from the districts
 that actually appear in each census's data (\link{census_population}), linked to

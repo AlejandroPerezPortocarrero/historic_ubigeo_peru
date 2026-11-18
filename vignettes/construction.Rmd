@@ -9,12 +9,12 @@ vignette: >
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(collapse = TRUE, comment = "#>")
-library(ubigeocensos)
+library(historicubigeo)
 ```
 
 # Goal
 
-`ubigeocensos` records the **presence of each department, province and district** of Peru in the national population censuses of **1981, 1993, 2007, 2017 and 2025**, together with each unit's **UBIGEO code** and its **date and legal instrument of creation**. The aim is to make it easier to link census data across years, for example when building district panels that have to account for newly created districts.
+`historicubigeo` records the **presence of each department, province and district** of Peru in the national population censuses of **1981, 1993, 2007, 2017 and 2025**, together with each unit's **UBIGEO code** and its **date and legal instrument of creation**. The aim is to make it easier to link census data across years, for example when building district panels that have to account for newly created districts.
 
 The reference frame is the political-administrative division of the 2025 Census. The 2025 INEI UBIGEO is the unique identifier.
 

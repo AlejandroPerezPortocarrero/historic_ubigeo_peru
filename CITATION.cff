@@ -1,7 +1,7 @@
 cff-version: 1.2.0
 message: "If you use this dataset, please cite it as below."
 type: dataset
-title: "historic_ubigeo (R package ubigeocensos): Peruvian Territorial Units in the 1981-2025 Population Censuses"
+title: "historic_ubigeo_peru (R package historicubigeo): Peruvian Territorial Units in the 1981-2025 Population Censuses"
 version: 0.1.0
 date-released: 2026-11-01
 license: MIT
@@ -10,7 +10,7 @@ authors:
     given-names: "Alejandro"
     email: "alejandroperezportocarrero@gmail.com"
     affiliation: "University of Manchester"
-repository-code: "https://github.com/alejandroperezportocarrero/historic_ubigeo"
+repository-code: "https://github.com/AlejandroPerezPortocarrero/historic_ubigeo_peru"
 keywords:
   - Peru
   - ubigeo

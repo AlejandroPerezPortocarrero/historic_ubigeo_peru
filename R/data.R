@@ -29,7 +29,7 @@
 #' INEI (2022). Presence refers to the unit as identified in 2025: units that were
 #' split, merged or moved between departments keep their 2025 identity, and
 #' units abolished before 2025 are not included. See
-#' `vignette("construction", package = "ubigeocensos")`.
+#' `vignette("construction", package = "historicubigeo")`.
 #' @source INEI, list of UBIGEO codes of the 2025 Census; INEI (1997), see
 #'   [inei1997_departments].
 "departments"
@@ -65,7 +65,7 @@
 #' INEI (2022). Presence refers to the unit as identified in 2025: units that were
 #' split, merged or moved between departments keep their 2025 identity, and
 #' units abolished before 2025 are not included. See
-#' `vignette("construction", package = "ubigeocensos")`.
+#' `vignette("construction", package = "historicubigeo")`.
 #' @source INEI, list of UBIGEO codes of the 2025 Census; INEI (1999), see
 #'   [inei1999_districts]; INEI (2020) and INEI (2022), see [division_counts];
 #'   JNE (2021) and Congreso de la República (2025), see
@@ -111,7 +111,7 @@
 #' INEI (2022). Presence refers to the unit as identified in 2025: units that were
 #' split, merged or moved between departments keep their 2025 identity, and
 #' units abolished before 2025 are not included. See
-#' `vignette("construction", package = "ubigeocensos")`.
+#' `vignette("construction", package = "historicubigeo")`.
 #'
 #' **Census data.** `enumerated_YYYY` and `code_YYYY` come from the districts
 #' that actually appear in each census's data ([census_population]), linked to
