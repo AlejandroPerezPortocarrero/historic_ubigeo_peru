@@ -183,7 +183,7 @@ Values that look wrong in the sources are kept as published and flagged:
 
 - INEI 1999: Veintisiete de Noviembre (Huaral) has Law 17702 with a 1957 date (probably Law 12702).
 - INEI 2020: Datem del Marañón appears with Law 228593 in the province table and Law 28593 in the district table.
-- INEI 2020: two origin districts cannot be matched: "Acobamba" (Chincheros) and "Camilaca" (Azángaro). Camilaca is a district of Candarave, Tacna.
+- INEI 2020: two origin names are corrected by hand. "Camilaca" (Azángaro), an origin of San Miguel (Puno), is Caminaca; the "Surco" origin of San Borja is Santiago de Surco, not Surco in Huarochirí. Both were found by the review of the census crosswalk. One origin cannot be matched: "Acobamba" (Chincheros), which is not a district of that province.
 - INEI 2020: one origin row gives "Huaylas" as the department of Huaylas (Áncash).
 
 # Step 3: presence in each census
@@ -277,21 +277,29 @@ d[!(d$census == 1981 & substr(d$inei, 1, 4) == "1510"), ]
 - **Bagua and La Peca.** By law (Ley 28884, 2006), Bagua was created from La Peca, so La Peca is the district that existed before. The crosswalk instead treats the earlier La Peca, whose capital was the city of Bagua, as today's Bagua (010201), because it keeps the code and most of the population. Neither choice changes any population figure; they label the successor differently.
 - **Corrections already made in the crosswalk.** This comparison led to two corrections in the crosswalk files. In 1993, code 160111 is Yaquerana (it was in Maynas until Ley 27195, 1999, and is in Requena as 160511 from 2007), not Teniente Manuel Clavero, which was created in 2004. In 1981, the census table labels two districts of General Sánchez Cerro "LLOQUE"; by population, 18-02-06 is Ubinas and 18-02-10 is Lloque.
 
-## Parents of new districts: population against the creation laws
+## Parents of new districts and harmonised units
 
-The crosswalk infers the parent of each new district from population (the district of the same province whose growth fell short by about the new district's population). The creation laws give the territorial origin directly (INEI 2020/2022, `inei_district_origins`), so the two can be compared:
+The parent of each new district comes from its creation law (`inei_district_origins`) for 191 of the 195 new districts; the build checks that the crosswalk's law origins are exactly those of the package, and that every parent taken from the law is one of them. Where the law lists several origins, the main one is the origin that lost most population relative to its province between the two censuses, or is set by hand where Lima's uneven growth makes that rule unreliable (Santa Anita, San Borja, Mi Perú, Ciudad Nueva). The other four are inferred from population: Sangani, Alto Trujillo and Santa Rosa de Loreto, created after 2021, and La Peca.
 
-```{r parents_vs_law}
+```{r parents}
 p <- subset(ubigeo_crosswalk, census == 2025 & !is.na(parent_inei))
-table(confidence = p$parent_confidence,
-      agrees_with_law = ifelse(is.na(p$parent_agrees_law), "no law data", p$parent_agrees_law))
+table(sub(" \\(.*\\)| of [0-9]+ origins", "", p$parent_confidence))
 ```
 
-They agree in 104 of the 189 comparable cases. Most disagreements are within a province (for example, by law Kimbiri was created from Echarate, and Huipoca and Boquerón from Padre Abad). Some are "only candidate" cases whose origin was then in another province (Calamarca and Huaso were created from Quiruvilca, in Santiago de Chuco). Because the harmonised units (`unit_YYYY`) follow the inferred parents, the comparisons they give are approximate for the units involved. Districts created from parts of several districts are assigned to one parent in any case.
+There are two sets of harmonised units. `unit_YYYY` counts a district carved from several districts entirely in its main origin's unit; `unit_YYYY_strict` merges the units of all its origins, which is exact but coarser:
+
+```{r units}
+sapply(c(1981, 1993, 2007, 2017), function(y)
+  c(census = y,
+    unit = length(unique(na.omit(ubigeo_crosswalk[[paste0("unit_", y)]]))),
+    unit_strict = length(unique(na.omit(ubigeo_crosswalk[[paste0("unit_", y, "_strict")]])))))
+```
+
+Use the strict units for panels where exact comparability matters. Boundary changes that did not create a district (transfers of territory between existing districts) are not captured by either.
 
 # Pending
 
-1. Rebuild the crosswalk's parents and harmonised units from the creation laws (`inei_district_origins`) where they are available.
+1. Code the territorial origins of the districts created after 2021 (Sangani, Alto Trujillo, Santa Rosa de Loreto) from their laws.
 2. Resolve the disagreements between sources recorded in `note`, going back to the laws themselves (GEOSDOT links to the scanned text of most of them).
 
 # References

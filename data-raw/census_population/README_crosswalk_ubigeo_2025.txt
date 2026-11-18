@@ -21,7 +21,13 @@ districts.csv, provinces.csv, departments.csv
                                Creation laws (INEI codes): creation date, legal instrument,
                                and flags census_<year> = 1 if the unit legally existed at
                                that census. districts.csv is used by the crosswalk (see 4.6).
-                               It does NOT give the district each new one was split from.
+inei_district_origins.csv      Territorial origin of each district created 1981-2021: the
+                               district(s) it was carved from (INEI 2020/2022, cuadro 4
+                               "procedencia territorial"; INEI codes). Source of the
+                               parents (see 4.4).
+suggested_parents_from_law.csv External review: suggested parent replacements derived from
+                               the origins table (REDATAM codes). Kept for reference; all
+                               66 direct replacements are reproduced by the crosswalk.
 
 
 2. DICTIONARY: poblacion_<year>.xlsx
@@ -83,7 +89,8 @@ Read all columns as text so the leading zeros survive.
                                                      recode), same name
                         same code, name differs      identical code, renamed or
                                                      respelled (e.g. Nazca -> Nasca)
-                        same code (via 1981 crosswalk) 1981 only: through ubigeo_current
+                        same code (via 1981 crosswalk) 1981 only: through the current
+                                                     ubigeo in crosswalk_district1981_prov1993.csv
                         name match                   code gone, unique name match in
                                                      the department
                         manual/inferred              set by hand or inferred (see note)
@@ -93,20 +100,34 @@ Read all columns as text so the leading zeros survive.
   law_created_date, law_legal_instrument
                       Creation date and law of the 2025 district (from districts.csv).
   parent_2025         For 2025 districts created after an earlier census: the 2025
-                      district they were split from (immediate parent). Blank for
+                      district they were split from (main parent). Blank for
                       districts that already existed in the first available census.
                       Repeated on every row that maps to that 2025 district.
+  law_origins_2025    All origin districts in the creation law (2025 codes, ";"-
+                      separated, in INEI's order). Blank if not in the origins table.
   created_after       Last census before the district appears (it was created between
                       created_after and the next census).
-  parent_confidence   manual | only candidate | high | medium | low (see 4.4).
-  parent_evidence     Inference details: the period, number of candidates, fit ratio
-                      (see 4.4) and the next best candidates.
+  parent_confidence   Source of parent_2025 (see 4.4):
+                        law                         single origin in the law
+                        law, main of N origins      N origins; main one = largest
+                                                    population loss (deficit)
+                          ... (manual)              main origin set from known history
+                          ... (weak population evidence)  no origin shows a clear
+                                                    loss; the main one is uncertain
+                        inferred: high/medium/...   not in the origins table
+                                                    (created after 2021, or La Peca)
+  parent_evidence     Period, law origins and each origin's deficit/child population
+                      (or, for inferred parents, the fit ratio and next candidates).
   unit_1981, unit_1993, unit_2007, unit_2017
-                      Harmonised unit on that census's boundaries: the 2025 code of
-                      the district that existed in that census and from which the
-                      row's 2025 district descends. All 2025 districts that descend
-                      from the same district of census Y share the same unit_Y.
-                      unit_1981 is blank in departments 03, 16 and 22.
+                      Harmonised unit on that census's boundaries, following
+                      parent_2025: the 2025 code of the district that existed in that
+                      census and from which the row's 2025 district descends. All 2025
+                      districts that descend from the same district of census Y share
+                      the same unit_Y. unit_1981 is blank in departments 03, 16 and 22.
+  unit_1981_strict, unit_1993_strict, unit_2007_strict, unit_2017_strict
+                      Same, but every district created after census Y from SEVERAL
+                      districts merges the units of all its law origins. Exact (no
+                      population is attributed to the wrong unit) but coarser.
 
 How to compare two censuses on the same boundaries
   Group both censuses by the unit of the EARLIER one. Example (pandas):
@@ -116,6 +137,13 @@ How to compare two censuses on the same boundaries
   Example: 2017 Viru (131201) and Chao (131202) both have unit_1993 = 131201, the
   1993 district of Viru. To use other variables, merge poblacion_<year>.xlsx (or any
   district file) with the crosswalk on census + ubigeo_census.
+  unit_Y or unit_Y_strict? unit_Y keeps the most units; a district carved from several
+  districts is counted entirely in its main origin's unit. unit_Y_strict is exact,
+  with fewer and larger units:
+    unit_1981 1,468 vs strict 1,371; unit_1993 1,793 vs 1,731;
+    unit_2007 1,831 vs 1,795; unit_2017 1,874 vs 1,872.
+  Use strict for panels where exact comparability matters. Use unit_Y when
+  finer detail matters more and small territorial transfers can be ignored.
 
 
 4. METHOD
@@ -160,28 +188,37 @@ How to compare two censuses on the same boundaries
 
 4.4 Parents of new districts (parent_2025)
   For each 2025 district we find the first census in which it has population
-  (created_after = the census before that one). Candidate parents are the districts
-  of the same 2025 province (or, if none, the same department) that exist in both
-  censuses. With g = the province's growth between the two censuses, each candidate
-  k has a "deficit":
-      deficit_k = g * pop_before(k) - pop_after(k)
-  The parent is the candidate whose deficit is closest to the new district's
-  population. The fit ratio is deficit / child population (1 = perfect). When a
-  parent is used, its deficit is reduced, so several children can share it.
-  Confidence:
-    only candidate  a single district could be the parent
-    high            fit 0.5-1.5 and clearly better than the next candidate
-    medium          fit 0.25-2.5
-    low             anything else: check before relying on it
-    manual          known creation history, where the inference was wrong:
-                    Santa Anita <- Ate; San Borja <- Surquillo; Mi Peru <- Ventanilla;
-                    Alto de la Alianza and Ciudad Nueva <- Tacna; Megantoni <- Echarati
-  Result: 195 new districts: 6 manual, 19 only candidate, 46 high, 112 medium,
-  12 low.
-  WARNING: an external check against the territorial origins in the creation laws
-  reported that only about 103 of 190 inferred parents agree with the law (high
-  confidence included). Treat parent_2025, and therefore the unit_<year> columns,
-  as provisional until law origins are loaded (see 5).
+  (created_after = the census before that one). Its parent comes from, in order:
+  a) The creation law: inei_district_origins.csv, recoded to 2025 codes. With one
+     origin, that district is the parent. With several origins, the main parent is
+     the origin with the largest population shortfall ("deficit") between the two
+     censuses:
+         deficit_k = g * pop_before(k) - pop_after(k)
+     where g is the growth of the provinces involved. An origin that lost most
+     population relative to its province is the one the new district took most
+     from. Exceptions:
+       - If a hand-set parent (PARENTS_MANUAL) is one of the law origins, it is used
+         as the main one: Santa Anita <- Ate; San Borja <- Surquillo; Mi Peru <-
+         Ventanilla; Ciudad Nueva <- Tacna. Lima's very uneven district growth makes
+         the deficit rule unreliable there.
+       - "weak population evidence" means no origin lost more than 0.25 times the
+         new district's population, so the main origin is uncertain. 6 cases:
+         Majes, Uchuraccay, Codo del Pozuzo, Palcazu, San Miguel (Puno), Irazola.
+       - An origin created in the same interval (Tinicachi <- Unicachi) is used
+         directly; the unit follows Unicachi's own parent.
+     Corrections to the origins table (ORIGIN_FIXES in the script):
+       San Borja's "Surco" is Santiago de Surco (150140), not Surco in Huarochiri
+       (150732); San Miguel's "Camilaca, Azangaro" is Caminaca (210205); the
+       uncoded "Acobamba" origin of Ranracancha is dropped (no such district in
+       Chincheros; Anco-Huallo is kept).
+  b) Districts not in the origins table: inferred from population. The candidates
+     are the districts of the same province, and the parent is the candidate whose
+     deficit is closest to the new district's population. This covers 4 districts:
+     Sangani <- Perene, Alto Trujillo <- El Porvenir and Santa Rosa de Loreto <-
+     Yavari (created after 2021), and La Peca <- Bagua (identity case, see 4.6).
+  Result: 195 new districts: 124 single law origin, 67 with several law origins
+  (of which 4 manual and 6 weak), 4 inferred. All 66 direct replacements in
+  suggested_parents_from_law.csv are reproduced.
 
 4.5 Harmonised units (unit_<year>)
   For each 2025 district, follow parent_2025 upward until reaching a district that
@@ -195,13 +232,22 @@ How to compare two censuses on the same boundaries
       Yauyos, so its 1981 districts cannot be identified. The whole province (2610)
       is a single 1981 unit (261001).
     - Several 1981 districts mapping to one 2025 district merge into one unit.
+    - 1981: when a lineage leads to a department missing from the 1981 data (e.g.
+      Pucayacu, whose law origins include Alto Biavo in San Martin), unit_1981 is
+      blank only if the main parent is there; Pucayacu's main origin is Jose Crespo
+      y Castillo (Huanuco).
+  Strict units (unit_Y_strict): starting from unit_Y, for each district created
+  after census Y from several districts, the units of all its law origins are
+  merged into one, named after the smallest 2025 code in the group. Largest strict
+  units: 33 districts of 2025 in 1981 (Yauyos), 14 in 1993, 15 in 2007, 3 in 2017.
 
 4.6 Check against creation laws (districts.csv)
   The script compares each 2025 district's legal existence at each census
   (census_<year> flags) with whether the census data has a district for it. Only
   two cases remain, both explained:
     - Bagua / La Peca: by law, La Peca (1861) continues as 010206 and Bagua was
-      created in 2008 (Ley 28884). The census codes follow the town instead: the
+      created by Ley 28884 (2006; listed by INEI under 2008). The census codes
+      follow the town instead: the
       old capital district La Peca (010201) maps to 2025 Bagua (010201). The
       harmonised unit is the same either way (Bagua + La Peca).
     - Carmen Alto, 2007: missing from the microdata (see 4.5).
@@ -213,15 +259,13 @@ How to compare two censuses on the same boundaries
 
 5. LIMITATIONS AND IMPORTANT NOTES
 ----------------------------------
-- Parents are INFERRED from population, not taken from the territorial origin
-  stated in the creation laws, and an external check found many disagreements (see
-  4.4). districts.csv has dates and laws but not origins. When a table of origins
-  (new district -> district(s) it came from) is available, load it into
-  PARENTS_MANUAL in crosswalk_ubigeo_2025.py and rerun. A wrong parent changes the
-  units only when it lies outside the true origin's lineage. Choosing the wrong
-  sibling within the same pre-split district does not change the unit.
-- Each new district has ONE parent. Districts created from parts of several
-  districts are assigned to the main one, so harmonised units are approximate there.
+- Parents follow the creation laws for 191 of 195 new districts. For districts
+  with several origins, the MAIN origin is chosen by population (or by hand) and
+  can be wrong, mainly in the 6 "weak population evidence" cases. This affects
+  unit_Y only; unit_Y_strict does not depend on the choice.
+- The origins table covers districts created up to 2021. Newer districts (Sangani,
+  Alto Trujillo, Santa Rosa de Loreto) have inferred parents. Add them to
+  PARENTS_MANUAL or to the origins table when their laws are coded.
 - Boundary changes that did not create or remove a district (transfers of
   territory between existing districts) are not detected.
 - ubigeo_2025 alone is a one-to-one "main successor" link. Comparing censuses by

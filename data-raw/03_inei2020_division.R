@@ -186,7 +186,7 @@ district_equivalences_2020 <- c(
 )
 # Origin districts left unmatched on purpose (inconsistent in the source):
 #   n = 117 "Acobamba" (Chincheros, Apurímac): no such district in Chincheros.
-#   n = 203 "Camilaca" (Azángaro, Puno): Camilaca is a district of Candarave, Tacna.
+#   (n = 203 "Camilaca" (Azángaro, Puno) is matched to Caminaca below.)
 
 match_district <- function(dept, prov, dist) {
   d25 <- units2025[units2025$level == "district", ]
@@ -217,6 +217,12 @@ odept <- ifelse(is.na(dept_code(origins$origin_department)),
 origins$origin_inei <- match_district(odept, origins$origin_province,
                                       sub(" \\(.*\\)$", "", origins$origin_district))
 origins$inei <- created$inei[match(origins$n, created$n)]
+# Origins the name match gets wrong or cannot resolve (found by the review of
+# the census crosswalk, data-raw/census_population/README_crosswalk_ubigeo_2025.txt):
+#   San Borja (150130): "Surco" (Lima) is Santiago de Surco, not Surco in Huarochirí.
+#   San Miguel (211105): "Camilaca" (Azángaro) is Caminaca.
+origins$origin_inei[origins$inei %in% "150130" & origins$origin_district == "Surco"] <- "150140"
+origins$origin_inei[origins$inei %in% "211105" & origins$origin_district == "Camilaca"] <- "210205"
 inei2020_district_origins <- tibble::as_tibble(origins[, c(
   "n", "inei", "origin_inei", "origin_district", "origin_province", "origin_department")])
 

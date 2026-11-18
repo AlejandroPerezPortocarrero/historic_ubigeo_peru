@@ -331,9 +331,10 @@
 #' \describe{
 #'   \item{n}{Row number in INEI (2022) (links to [inei_districts_created])}
 #'   \item{inei}{UBIGEO (2025) of the created district}
-#'   \item{origin_inei}{UBIGEO (2025) of the origin district; `NA` for two
-#'     origins that are inconsistent in the source ("Acobamba", Chincheros; and
-#'     "Camilaca", Azángaro)}
+#'   \item{origin_inei}{UBIGEO (2025) of the origin district; `NA` for
+#'     "Acobamba" (Chincheros), which is not a district of that province.
+#'     "Camilaca" (Azángaro) is read as Caminaca, and the "Surco" origin of San
+#'     Borja as Santiago de Surco.}
 #'   \item{origin_district,origin_province,origin_department}{Names as published}
 #' }
 #' @source INEI (2020) and INEI (2022), see [division_counts].
@@ -484,14 +485,19 @@
 #' the earlier one.
 #'
 #' The parent of each district created after an earlier census
-#' (`parent_inei`) is **inferred from population** (see `parent_confidence`).
-#' `law_origins` gives, for comparison, the districts each one was carved from
-#' according to its creation law (INEI 2020/2022, [inei_district_origins]), and
-#' `parent_agrees_law` says whether the inferred parent is among them. They
-#' agree in 104 of 189 comparable cases. The `unit_YYYY` columns follow the
-#' inferred parents.
+#' (`parent_inei`) comes from its creation law (INEI 2020/2022,
+#' [inei_district_origins]) for 191 of the 195 new districts. Where the law
+#' lists several origins, the main one is the origin that lost most population
+#' relative to its province (or is set by hand); see `parent_confidence`. The
+#' other 4 (Sangani, Alto Trujillo, Santa Rosa de Loreto, created after 2021,
+#' and La Peca) are inferred from population.
 #'
-#' @format A tibble with 8,898 rows and 22 variables:
+#' Two sets of harmonised units are given. `unit_YYYY` counts a district carved
+#' from several districts entirely in its main origin's unit. `unit_YYYY_strict`
+#' merges the units of all its origins: exact, but coarser (in 1993, 1,731
+#' units against 1,793).
+#'
+#' @format A tibble with 8,898 rows and 26 variables:
 #' \describe{
 #'   \item{census}{Census year}
 #'   \item{ubigeo_census}{District code in that census (REDATAM code for 2025)}
@@ -503,18 +509,23 @@
 #'     name, name match, manual/inferred, unmatched, or 2025 district}
 #'   \item{note}{Evidence for renames and manual or inferred links}
 #'   \item{parent_inei}{For 2025 districts created after an earlier census: the
-#'     2025 district it was split from, inferred from population}
+#'     2025 district it was split from (main origin)}
 #'   \item{created_after}{Last census before the district first appears}
-#'   \item{parent_confidence}{`manual`, `only candidate`, `high`, `medium` or
-#'     `low`}
+#'   \item{parent_confidence}{Source of the parent: `law` (single origin),
+#'     `law, main of N origins` (with `(manual)` or `(weak population
+#'     evidence)` where relevant), or `inferred: ...` for districts not in the
+#'     law table}
 #'   \item{parent_evidence}{Details of the inference}
 #'   \item{law_origins}{Origin districts in the creation law (INEI codes,
-#'     separated by `;`)}
+#'     separated by `;`, in INEI's order)}
 #'   \item{parent_agrees_law}{`TRUE` if `parent_inei` is in `law_origins`;
 #'     `NA` if either is missing}
 #'   \item{unit_1981,unit_1993,unit_2007,unit_2017}{Harmonised unit: the 2025
 #'     code of the district of that census from which the row's 2025 district
-#'     descends}
+#'     descends (through main origins)}
+#'   \item{unit_1981_strict,unit_1993_strict,unit_2007_strict,unit_2017_strict}{Strict
+#'     harmonised unit: as `unit_YYYY`, but a district created after that census
+#'     from several districts merges the units of all its origins}
 #' }
 #' @source Built by the package author from INEI census data: microdata of
 #'   the Censos Nacionales de Población y Vivienda 1981 (sample, weighted),

@@ -75,8 +75,11 @@ for (y in cp_years) {          # every level adds up to the same national total
 # ---- Crosswalk -----------------------------------------------------------------
 xw <- utils::read.csv(file.path(cp_dir, "crosswalk_ubigeo_2025.csv"), colClasses = "character",
                       fileEncoding = "UTF-8-BOM", na.strings = "")
-for (v in c("ubigeo_2025", "parent_2025", paste0("unit_", cp_years[-5])))
+for (v in c("ubigeo_2025", "parent_2025", paste0("unit_", cp_years[-5]),
+            paste0("unit_", cp_years[-5], "_strict")))
   xw[[v]] <- redatam_to_inei(xw[[v]])
+xw$law_origins_2025 <- vapply(strsplit(xw$law_origins_2025, ";"), function(v)
+  if (length(v) == 1 && is.na(v)) NA_character_ else paste(redatam_to_inei(v), collapse = ";"), "")
 xw$census <- as.integer(xw$census)
 xw$population_census <- as.integer(xw$population_census)
 xw$created_after <- as.integer(xw$created_after)
@@ -91,15 +94,23 @@ stopifnot(nrow(chk) == nrow(xw), nrow(chk) == nrow(pop),
           identical(is.na(chk$ubigeo_2025), is.na(chk$inei)),
           all(chk$ubigeo_2025 == chk$inei, na.rm = TRUE))
 
-# Territorial origin according to the creation laws (INEI 2020/2022), to
-# compare with the parent inferred from population (parent_2025)
+# Parents follow the creation laws (INEI 2020/2022). Check that the crosswalk's
+# law origins are those of the package's inei_district_origins, and that each
+# parent taken from the law is one of them.
 law <- inei_district_origins[!is.na(inei_district_origins$origin_inei), ]
-law_origins <- tapply(law$origin_inei, law$inei, function(v) paste(unique(v), collapse = ";"))
-xw$law_origins <- unname(law_origins[xw$ubigeo_2025])
+pkg_origins <- tapply(law$origin_inei, law$inei, function(v) paste(sort(unique(v)), collapse = ";"))
+xw_origins <- vapply(strsplit(xw$law_origins_2025, ";"), function(v)
+  if (length(v) == 1 && is.na(v)) NA_character_ else paste(sort(unique(v)), collapse = ";"), "")
+has <- !is.na(xw_origins)
+bad <- has & (is.na(pkg_origins[xw$ubigeo_2025]) | xw_origins != pkg_origins[xw$ubigeo_2025])
+if (any(bad)) {
+  print(unique(data.frame(inei = xw$ubigeo_2025, crosswalk = xw_origins, package = pkg_origins[xw$ubigeo_2025])[bad, ]))
+  stop("Law origins differ between the crosswalk and inei_district_origins")
+}
 xw$parent_agrees_law <- ifelse(
-  is.na(xw$parent_2025) | is.na(xw$law_origins), NA,
-  mapply(function(p, o) p %in% strsplit(o, ";")[[1]], xw$parent_2025,
-         ifelse(is.na(xw$law_origins), "", xw$law_origins)))
+  is.na(xw$parent_2025) | !has, NA,
+  mapply(function(p, o) p %in% strsplit(o, ";")[[1]], xw$parent_2025, ifelse(has, xw$law_origins_2025, "")))
+stopifnot(all(xw$parent_agrees_law[grepl("^law", xw$parent_confidence)]))
 
 ubigeo_crosswalk <- tibble::as_tibble(data.frame(
   census = xw$census, ubigeo_census = xw$ubigeo_census,
@@ -109,11 +120,13 @@ ubigeo_crosswalk <- tibble::as_tibble(data.frame(
   department_2025 = xw$department_2025, province_2025 = xw$province_2025,
   district_2025 = xw$district_2025,
   method = xw$method, note = xw$note,
-  parent_inei = xw$parent_2025, created_after = xw$created_after,
+  parent_inei = xw$parent_2025, law_origins = xw$law_origins_2025,
+  parent_agrees_law = xw$parent_agrees_law, created_after = xw$created_after,
   parent_confidence = xw$parent_confidence, parent_evidence = xw$parent_evidence,
-  law_origins = xw$law_origins, parent_agrees_law = xw$parent_agrees_law,
   unit_1981 = xw$unit_1981, unit_1993 = xw$unit_1993,
   unit_2007 = xw$unit_2007, unit_2017 = xw$unit_2017,
+  unit_1981_strict = xw$unit_1981_strict, unit_1993_strict = xw$unit_1993_strict,
+  unit_2007_strict = xw$unit_2007_strict, unit_2017_strict = xw$unit_2017_strict,
   stringsAsFactors = FALSE))
 
 census_population <- tibble::as_tibble(pop)

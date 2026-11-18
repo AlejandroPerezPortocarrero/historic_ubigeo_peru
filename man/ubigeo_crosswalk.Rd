@@ -5,7 +5,7 @@
 \alias{ubigeo_crosswalk}
 \title{Crosswalk of census district codes to the 2025 districts}
 \format{
-A tibble with 8,898 rows and 22 variables:
+A tibble with 8,898 rows and 26 variables:
 \describe{
 \item{census}{Census year}
 \item{ubigeo_census}{District code in that census (REDATAM code for 2025)}
@@ -17,18 +17,22 @@ A tibble with 8,898 rows and 22 variables:
 name, name match, manual/inferred, unmatched, or 2025 district}
 \item{note}{Evidence for renames and manual or inferred links}
 \item{parent_inei}{For 2025 districts created after an earlier census: the
-2025 district it was split from, inferred from population}
+2025 district it was split from (main origin)}
 \item{created_after}{Last census before the district first appears}
-\item{parent_confidence}{\code{manual}, \verb{only candidate}, \code{high}, \code{medium} or
-\code{low}}
+\item{parent_confidence}{Source of the parent: \code{law} (single origin),
+\verb{law, main of N origins} (with \code{(manual)} or \verb{(weak population evidence)} where relevant), or \code{inferred: ...} for districts not in the
+law table}
 \item{parent_evidence}{Details of the inference}
 \item{law_origins}{Origin districts in the creation law (INEI codes,
-separated by \verb{;})}
+separated by \verb{;}, in INEI's order)}
 \item{parent_agrees_law}{\code{TRUE} if \code{parent_inei} is in \code{law_origins};
 \code{NA} if either is missing}
 \item{unit_1981,unit_1993,unit_2007,unit_2017}{Harmonised unit: the 2025
 code of the district of that census from which the row's 2025 district
-descends}
+descends (through main origins)}
+\item{unit_1981_strict,unit_1993_strict,unit_2007_strict,unit_2017_strict}{Strict
+harmonised unit: as \code{unit_YYYY}, but a district created after that census
+from several districts merges the units of all its origins}
 }
 }
 \source{
@@ -54,11 +58,16 @@ two censuses on the same boundaries, aggregate both by the \code{unit_YYYY} of
 the earlier one.
 
 The parent of each district created after an earlier census
-(\code{parent_inei}) is \strong{inferred from population} (see \code{parent_confidence}).
-\code{law_origins} gives, for comparison, the districts each one was carved from
-according to its creation law (INEI 2020/2022, \link{inei_district_origins}), and
-\code{parent_agrees_law} says whether the inferred parent is among them. They
-agree in 104 of 189 comparable cases. The \code{unit_YYYY} columns follow the
-inferred parents.
+(\code{parent_inei}) comes from its creation law (INEI 2020/2022,
+\link{inei_district_origins}) for 191 of the 195 new districts. Where the law
+lists several origins, the main one is the origin that lost most population
+relative to its province (or is set by hand); see \code{parent_confidence}. The
+other 4 (Sangani, Alto Trujillo, Santa Rosa de Loreto, created after 2021,
+and La Peca) are inferred from population.
+
+Two sets of harmonised units are given. \code{unit_YYYY} counts a district carved
+from several districts entirely in its main origin's unit. \code{unit_YYYY_strict}
+merges the units of all its origins: exact, but coarser (in 1993, 1,731
+units against 1,793).
 }
 \keyword{datasets}

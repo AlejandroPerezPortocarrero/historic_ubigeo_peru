@@ -9,9 +9,10 @@ A tibble with one row per created district and origin, 6 variables:
 \describe{
 \item{n}{Row number in INEI (2022) (links to \link{inei_districts_created})}
 \item{inei}{UBIGEO (2025) of the created district}
-\item{origin_inei}{UBIGEO (2025) of the origin district; \code{NA} for two
-origins that are inconsistent in the source ("Acobamba", Chincheros; and
-"Camilaca", Azángaro)}
+\item{origin_inei}{UBIGEO (2025) of the origin district; \code{NA} for
+"Acobamba" (Chincheros), which is not a district of that province.
+"Camilaca" (Azángaro) is read as Caminaca, and the "Surco" origin of San
+Borja as Santiago de Surco.}
 \item{origin_district,origin_province,origin_department}{Names as published}
 }
 }

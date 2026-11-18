@@ -37,7 +37,7 @@ The construction steps and sources are documented in the vignette `vignette("con
 | 4 | Territorial origin of districts created 1981–2021 | ✅ (`inei_district_origins`) |
 | 5 | Creation dates of units that existed before 1981 | ✅ From PCM-SDOT (GEOSDOT), 1,511 districts and 152 provinces; disagreements with INEI noted in `note` |
 | 6 | Census district lists, population by sex and area, and crosswalk of census codes to 2025 | ✅ 1981 (sample, without Apurímac, Loreto and San Martín), 1993, 2007, 2017 and 2025 |
-| 7 | Parents of new districts from creation laws in the crosswalk's harmonised units | 🔄 Inferred parents agree with the law in 104 of 189 cases (`parent_agrees_law`) |
+| 7 | Parents of new districts from creation laws in the crosswalk's harmonised units | ✅ 191 of 195 from the law (4 created after 2021 or identity cases inferred); main and strict units |
 
 ## Data structure
 
@@ -105,7 +105,7 @@ x <- subset(x, census %in% c(1993, 2017))
 aggregate(total ~ unit_1993 + census, data = x, FUN = sum)
 ```
 
-The parents of new districts are inferred from population (`parent_confidence`); `law_origins` and `parent_agrees_law` compare them with the creation laws.
+The parents of new districts come from their creation laws (`law_origins`), except for four districts created after 2021 or treated as identity cases. `unit_YYYY` follows each district's main origin; `unit_YYYY_strict` merges all origins of districts carved from several, which is exact but coarser. Use the strict units where exact comparability matters.
 
 ### Legal creation of districts, INEI 1999 (`inei1999_districts`)
 
