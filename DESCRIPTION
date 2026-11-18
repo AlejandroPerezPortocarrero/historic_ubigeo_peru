@@ -1,7 +1,7 @@
 Package: historicubigeo
 Type: Package
 Title: Peruvian Territorial Units in the 1981-2025 Population Censuses
-Version: 0.1.0
+Version: 1.0.0
 Authors@R:
     person("Alejandro", "Pérez Portocarrero",
            email = "alejandroperezportocarrero@gmail.com",

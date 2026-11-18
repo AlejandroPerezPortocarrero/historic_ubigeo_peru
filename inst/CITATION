@@ -1,0 +1,14 @@
+bibentry(
+  bibtype = "Manual",
+  title = "historic_ubigeo_peru (R package historicubigeo): Peruvian Territorial Units in the 1981-2025 Population Censuses",
+  author = person("Alejandro", "Pérez Portocarrero"),
+  year = "2026",
+  note = "R package and dataset, version 1.0.0",
+  url = "https://github.com/AlejandroPerezPortocarrero/historic_ubigeo_peru",
+  textVersion = paste(
+    "Pérez Portocarrero, A. (2026).",
+    "historic_ubigeo_peru (R package historicubigeo): Peruvian Territorial Units",
+    "in the 1981-2025 Population Censuses. Version 1.0.0.",
+    "https://github.com/AlejandroPerezPortocarrero/historic_ubigeo_peru"
+  )
+)
