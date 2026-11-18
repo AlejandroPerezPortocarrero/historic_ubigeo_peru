@@ -17,6 +17,11 @@ crosswalk_ubigeo_2025.csv      Census district -> 2025 district, with harmonised
 2025_ubigeo_sexo.xlsX          REDATAM input (CPV 2025, population by sex and district)
 2025_ubigeo_rurality.xlsX      REDATAM input (CPV 2025, "area de residencia segun
                                concepto de censo", by district)
+districts.csv, provinces.csv, departments.csv
+                               Creation laws (INEI codes): creation date, legal instrument,
+                               and flags census_<year> = 1 if the unit legally existed at
+                               that census. districts.csv is used by the crosswalk (see 4.6).
+                               It does NOT give the district each new one was split from.
 
 
 2. DICTIONARY: poblacion_<year>.xlsx
@@ -30,7 +35,6 @@ District sheet
                   matched. See crosswalk_ubigeo_2025.csv for how each match was made.
   department, province, district
                   Names as in that census.
-  ubigeo_current  1981 only: current INEI ubigeo from crosswalk_district1981_prov1993.csv.
   total           Population.
   male, female    Population by sex.
   urban, rural    Population by area. urban + rural = total, male + female = total.
@@ -86,6 +90,8 @@ Read all columns as text so the leading zeros survive.
                         unmatched                    could not be assigned
                         2025 district                rows of the 2025 census itself
   note                Reason/evidence for name changes, manual and inferred matches.
+  law_created_date, law_legal_instrument
+                      Creation date and law of the 2025 district (from districts.csv).
   parent_2025         For 2025 districts created after an earlier census: the 2025
                       district they were split from (immediate parent). Blank for
                       districts that already existed in the first available census.
@@ -147,7 +153,10 @@ How to compare two censuses on the same boundaries
     100302  1993 = Aparicio Pomares (Chupan in 1981). Codes 02-06 follow the
             alphabetical order only with this name.
     090708  Huando; 090712 Pachamarca (this one identified from population only).
-    160111  Teniente Manuel Clavero? LOW CONFIDENCE.
+    160111  Yaquerana: next in Maynas' alphabetical order after Torres Causana.
+            Created 1943 (Ley 9815) and modified by Ley 27195 (1999); in Requena
+            (160511) by 2007. An earlier version assigned Teniente Manuel Clavero, but
+            that district was only created in 2004 (Ley 28362).
 
 4.4 Parents of new districts (parent_2025)
   For each 2025 district we find the first census in which it has population
@@ -167,8 +176,12 @@ How to compare two censuses on the same boundaries
     manual          known creation history, where the inference was wrong:
                     Santa Anita <- Ate; San Borja <- Surquillo; Mi Peru <- Ventanilla;
                     Alto de la Alianza and Ciudad Nueva <- Tacna; Megantoni <- Echarati
-  Result: 196 new districts: 6 manual, 18 only candidate, 47 high, 113 medium,
+  Result: 195 new districts: 6 manual, 19 only candidate, 46 high, 112 medium,
   12 low.
+  WARNING: an external check against the territorial origins in the creation laws
+  reported that only about 103 of 190 inferred parents agree with the law (high
+  confidence included). Treat parent_2025, and therefore the unit_<year> columns,
+  as provisional until law origins are loaded (see 5).
 
 4.5 Harmonised units (unit_<year>)
   For each 2025 district, follow parent_2025 upward until reaching a district that
@@ -183,13 +196,30 @@ How to compare two censuses on the same boundaries
       is a single 1981 unit (261001).
     - Several 1981 districts mapping to one 2025 district merge into one unit.
 
+4.6 Check against creation laws (districts.csv)
+  The script compares each 2025 district's legal existence at each census
+  (census_<year> flags) with whether the census data has a district for it. Only
+  two cases remain, both explained:
+    - Bagua / La Peca: by law, La Peca (1861) continues as 010206 and Bagua was
+      created in 2008 (Ley 28884). The census codes follow the town instead: the
+      old capital district La Peca (010201) maps to 2025 Bagua (010201). The
+      harmonised unit is the same either way (Bagua + La Peca).
+    - Carmen Alto, 2007: missing from the microdata (see 4.5).
+  The check led to two corrections: 1993 code 160111 = Yaquerana (4.3), and the
+  1981 Ubinas/Lloque swap. The 1981 table labels both 18-02-06 and 18-02-10
+  "LLOQUE"; by population, 18-02-06 (2,836) is Ubinas and 18-02-10 (596) is Lloque.
+  Both override crosswalk_district1981_prov1993.csv.
+
 
 5. LIMITATIONS AND IMPORTANT NOTES
 ----------------------------------
-- Parents are INFERRED from population, not taken from creation laws. Check the
-  low/medium cases, mainly in fast-changing areas (Lima Metropolitana, VRAEM,
-  Amazon), before relying on district-level results there. Fixes go in
-  PARENTS_MANUAL in crosswalk_ubigeo_2025.py.
+- Parents are INFERRED from population, not taken from the territorial origin
+  stated in the creation laws, and an external check found many disagreements (see
+  4.4). districts.csv has dates and laws but not origins. When a table of origins
+  (new district -> district(s) it came from) is available, load it into
+  PARENTS_MANUAL in crosswalk_ubigeo_2025.py and rerun. A wrong parent changes the
+  units only when it lies outside the true origin's lineage. Choosing the wrong
+  sibling within the same pre-split district does not change the unit.
 - Each new district has ONE parent. Districts created from parts of several
   districts are assigned to the main one, so harmonised units are approximate there.
 - Boundary changes that did not create or remove a district (transfers of
@@ -199,7 +229,9 @@ How to compare two censuses on the same boundaries
   1993 Viru vs 2017 Viru). Use the unit_<year> columns for comparisons over time.
 - 1981 is a weighted sample without Apurimac, Loreto and San Martin; unit_1981 is
   blank there. Two Yauyos districts (898 people) have no ubigeo_2025.
-- 1993 microdata totals are 37,673 below the published figure. 160111 is uncertain.
+- 1993 microdata totals are 37,673 below the published figure.
+- In poblacion_1981.xlsx, district names are those of the 1981 table, including its
+  mislabels (e.g. Ubinas appears as LLOQUE). Trust ubigeo_2025, not the 1981 name.
 - 2007: Carmen Alto is missing (counted in Ayacucho); Mazamari-Pangoa is a joint
   area. Some rural districts look over-counted in 2007 compared with 1993 and 2017
   (e.g. Paucara 9,270 / 24,317 / 10,415). This shows up as large 2007-2017 declines

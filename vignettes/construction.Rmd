@@ -273,10 +273,9 @@ d[!(d$census == 1981 & substr(d$inei, 1, 4) == "1510"), ]
 ```
 
 - **Yauyos, 1981** (24 districts, not shown above). The 1981 name table gives Yauyos the district names of Huarochirí, so its 1981 districts cannot be told apart. The crosswalk treats the whole province as one unit.
-- **Ubinas, 1981.** It existed in 1981 but has no own record in the 1981 sample data.
 - **Carmen Alto, 2007.** It is missing from the 2007 microdata; its population is counted under Ayacucho.
 - **Bagua and La Peca.** By law (Ley 28884, 2006), Bagua was created from La Peca, so La Peca is the district that existed before. The crosswalk instead treats the earlier La Peca, whose capital was the city of Bagua, as today's Bagua (010201), because it keeps the code and most of the population. Neither choice changes any population figure; they label the successor differently.
-- **Code 160111, 1993.** The crosswalk links it, with low confidence, to Teniente Manuel Clavero. That district was created in 2004 (Ley 28362), so it cannot be in the 1993 census. The evidence points to **Yaquerana**: it existed since 1943, it is the only 1993 district without a record, its 2007 population (2,396) is close to that of 160111 in 1993 (1,618), code 11 follows Torres Causana (10) in the alphabetical order of Maynas, code 160111 is no longer used in 2007, and Ley 27195 (1999), which reorganised Maynas, modifies Yaquerana (GEOSDOT). Yaquerana appears in Requena (160511) from 2007.
+- **Corrections already made in the crosswalk.** This comparison led to two corrections in the crosswalk files. In 1993, code 160111 is Yaquerana (it was in Maynas until Ley 27195, 1999, and is in Requena as 160511 from 2007), not Teniente Manuel Clavero, which was created in 2004. In 1981, the census table labels two districts of General Sánchez Cerro "LLOQUE"; by population, 18-02-06 is Ubinas and 18-02-10 is Lloque.
 
 ## Parents of new districts: population against the creation laws
 
@@ -288,11 +287,11 @@ table(confidence = p$parent_confidence,
       agrees_with_law = ifelse(is.na(p$parent_agrees_law), "no law data", p$parent_agrees_law))
 ```
 
-They agree in 103 of the 190 comparable cases. Most disagreements are within a province (for example, by law Kimbiri was created from Echarate, and Huipoca and Boquerón from Padre Abad). Some are "only candidate" cases whose origin was then in another province (Calamarca and Huaso were created from Quiruvilca, in Santiago de Chuco). Because the harmonised units (`unit_YYYY`) follow the inferred parents, the comparisons they give are approximate for the units involved. Districts created from parts of several districts are assigned to one parent in any case.
+They agree in 104 of the 189 comparable cases. Most disagreements are within a province (for example, by law Kimbiri was created from Echarate, and Huipoca and Boquerón from Padre Abad). Some are "only candidate" cases whose origin was then in another province (Calamarca and Huaso were created from Quiruvilca, in Santiago de Chuco). Because the harmonised units (`unit_YYYY`) follow the inferred parents, the comparisons they give are approximate for the units involved. Districts created from parts of several districts are assigned to one parent in any case.
 
 # Pending
 
-1. Rebuild the crosswalk's parents and harmonised units from the creation laws where they are available, and fix code 160111 in 1993 (Yaquerana).
+1. Rebuild the crosswalk's parents and harmonised units from the creation laws (`inei_district_origins`) where they are available.
 2. Resolve the disagreements between sources recorded in `note`, going back to the laws themselves (GEOSDOT links to the scanned text of most of them).
 
 # References

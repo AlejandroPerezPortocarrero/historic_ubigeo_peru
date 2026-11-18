@@ -37,7 +37,7 @@ The construction steps and sources are documented in the vignette `vignette("con
 | 4 | Territorial origin of districts created 1981–2021 | ✅ (`inei_district_origins`) |
 | 5 | Creation dates of units that existed before 1981 | ✅ From PCM-SDOT (GEOSDOT), 1,511 districts and 152 provinces; disagreements with INEI noted in `note` |
 | 6 | Census district lists, population by sex and area, and crosswalk of census codes to 2025 | ✅ 1981 (sample, without Apurímac, Loreto and San Martín), 1993, 2007, 2017 and 2025 |
-| 7 | Parents of new districts from creation laws in the crosswalk's harmonised units | 🔄 Inferred parents agree with the law in 103 of 190 cases (`parent_agrees_law`) |
+| 7 | Parents of new districts from creation laws in the crosswalk's harmonised units | 🔄 Inferred parents agree with the law in 104 of 189 cases (`parent_agrees_law`) |
 
 ## Data structure
 

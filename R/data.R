@@ -118,7 +118,7 @@
 #' 2025 by [ubigeo_crosswalk]. They agree with `census_YYYY` for every district
 #' in 2017; the few differences in 1981, 1993 and 2007 are listed in the
 #' vignette (Yauyos counted as one unit in 1981, Carmen Alto counted under
-#' Ayacucho in 2007, the Bagua/La Peca succession, and code 160111 in 1993).
+#' Ayacucho in 2007, and the Bagua/La Peca succession).
 #' @source INEI, list of UBIGEO codes of the 2025 Census; INEI (1999), see
 #'   [inei1999_districts]; INEI (2020) and INEI (2022), see [division_counts];
 #'   JNE (2021) and Congreso de la República (2025), see
@@ -488,7 +488,7 @@
 #' `law_origins` gives, for comparison, the districts each one was carved from
 #' according to its creation law (INEI 2020/2022, [inei_district_origins]), and
 #' `parent_agrees_law` says whether the inferred parent is among them. They
-#' agree in 103 of 190 comparable cases. The `unit_YYYY` columns follow the
+#' agree in 104 of 189 comparable cases. The `unit_YYYY` columns follow the
 #' inferred parents.
 #'
 #' @format A tibble with 8,898 rows and 22 variables:

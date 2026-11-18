@@ -61,6 +61,6 @@ that actually appear in each census's data (\link{census_population}), linked to
 2025 by \link{ubigeo_crosswalk}. They agree with \code{census_YYYY} for every district
 in 2017; the few differences in 1981, 1993 and 2007 are listed in the
 vignette (Yauyos counted as one unit in 1981, Carmen Alto counted under
-Ayacucho in 2007, the Bagua/La Peca succession, and code 160111 in 1993).
+Ayacucho in 2007, and the Bagua/La Peca succession).
 }
 \keyword{datasets}

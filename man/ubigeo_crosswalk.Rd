@@ -58,7 +58,7 @@ The parent of each district created after an earlier census
 \code{law_origins} gives, for comparison, the districts each one was carved from
 according to its creation law (INEI 2020/2022, \link{inei_district_origins}), and
 \code{parent_agrees_law} says whether the inferred parent is among them. They
-agree in 103 of 190 comparable cases. The \code{unit_YYYY} columns follow the
+agree in 104 of 189 comparable cases. The \code{unit_YYYY} columns follow the
 inferred parents.
 }
 \keyword{datasets}
