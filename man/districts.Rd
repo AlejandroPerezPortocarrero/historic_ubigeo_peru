@@ -5,7 +5,7 @@
 \alias{districts}
 \title{Districts of Peru (Census 2025)}
 \format{
-A tibble with 1,892 rows and 15 variables:
+A tibble with 1,892 rows and 24 variables:
 \describe{
 \item{inei}{UBIGEO (INEI, Census 2025), 6-character string}
 \item{department}{Name of the department}
@@ -21,13 +21,21 @@ Congreso 2025. \code{NA} when only the year is known.}
 \item{note}{Warnings about the data (possible errors in the source)}
 \item{census_1981,census_1993,census_2007,census_2017,census_2025}{1 if the unit
 existed at the census date, 0 if it was created afterwards. See Details.}
+\item{enumerated_1981,enumerated_1993,enumerated_2007,enumerated_2017,enumerated_2025}{1
+if that census's data have a district record that \link{ubigeo_crosswalk}
+links to this district, 0 if not, \code{NA} where the census data are not
+available (1981: Apurímac, Loreto and San Martín). See Details.}
+\item{code_1981,code_1993,code_2007,code_2017}{UBIGEO code(s) used by that
+census for the district (codes separated by \verb{;} where several 1981
+districts are linked to it)}
 }
 }
 \source{
 INEI, list of UBIGEO codes of the 2025 Census; INEI (1999), see
 \link{inei1999_districts}; INEI (2020) and INEI (2022), see \link{division_counts};
 JNE (2021) and Congreso de la República (2025), see
-\link{districts_created_2020_2025}; PCM-SDOT (GEOSDOT), see \link{geosdot_norms}.
+\link{districts_created_2020_2025}; PCM-SDOT (GEOSDOT), see \link{geosdot_norms};
+census data, see \link{census_population}.
 }
 \usage{
 districts
@@ -47,5 +55,12 @@ INEI (2022). Presence refers to the unit as identified in 2025: units that were
 split, merged or moved between departments keep their 2025 identity, and
 units abolished before 2025 are not included. See
 \code{vignette("construction", package = "ubigeocensos")}.
+
+\strong{Census data.} \code{enumerated_YYYY} and \code{code_YYYY} come from the districts
+that actually appear in each census's data (\link{census_population}), linked to
+2025 by \link{ubigeo_crosswalk}. They agree with \code{census_YYYY} for every district
+in 2017; the few differences in 1981, 1993 and 2007 are listed in the
+vignette (Yauyos counted as one unit in 1981, Carmen Alto counted under
+Ayacucho in 2007, the Bagua/La Peca succession, and code 160111 in 1993).
 }
 \keyword{datasets}

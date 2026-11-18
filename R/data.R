@@ -77,7 +77,7 @@
 #' Districts in the 2025 Census, identified by their INEI UBIGEO code, with
 #' their creation date, legal instrument of creation and presence in each census.
 #'
-#' @format A tibble with 1,892 rows and 15 variables:
+#' @format A tibble with 1,892 rows and 24 variables:
 #' \describe{
 #'   \item{inei}{UBIGEO (INEI, Census 2025), 6-character string}
 #'   \item{department}{Name of the department}
@@ -93,6 +93,13 @@
 #'   \item{note}{Warnings about the data (possible errors in the source)}
 #'   \item{census_1981,census_1993,census_2007,census_2017,census_2025}{1 if the unit
 #'     existed at the census date, 0 if it was created afterwards. See Details.}
+#'   \item{enumerated_1981,enumerated_1993,enumerated_2007,enumerated_2017,enumerated_2025}{1
+#'     if that census's data have a district record that [ubigeo_crosswalk]
+#'     links to this district, 0 if not, `NA` where the census data are not
+#'     available (1981: Apurímac, Loreto and San Martín). See Details.}
+#'   \item{code_1981,code_1993,code_2007,code_2017}{UBIGEO code(s) used by that
+#'     census for the district (codes separated by `;` where several 1981
+#'     districts are linked to it)}
 #' }
 #' @details
 #' **Census presence.** A unit is coded as present in a census when it had
@@ -105,10 +112,18 @@
 #' split, merged or moved between departments keep their 2025 identity, and
 #' units abolished before 2025 are not included. See
 #' `vignette("construction", package = "ubigeocensos")`.
+#'
+#' **Census data.** `enumerated_YYYY` and `code_YYYY` come from the districts
+#' that actually appear in each census's data ([census_population]), linked to
+#' 2025 by [ubigeo_crosswalk]. They agree with `census_YYYY` for every district
+#' in 2017; the few differences in 1981, 1993 and 2007 are listed in the
+#' vignette (Yauyos counted as one unit in 1981, Carmen Alto counted under
+#' Ayacucho in 2007, the Bagua/La Peca succession, and code 160111 in 1993).
 #' @source INEI, list of UBIGEO codes of the 2025 Census; INEI (1999), see
 #'   [inei1999_districts]; INEI (2020) and INEI (2022), see [division_counts];
 #'   JNE (2021) and Congreso de la República (2025), see
-#'   [districts_created_2020_2025]; PCM-SDOT (GEOSDOT), see [geosdot_norms].
+#'   [districts_created_2020_2025]; PCM-SDOT (GEOSDOT), see [geosdot_norms];
+#'   census data, see [census_population].
 "districts"
 
 #' Legal creation of departments, INEI 1997
@@ -388,3 +403,122 @@
 #'   naturaleza demarcatoria (GEOSDOT)*, módulo Circunscripciones. Consulted on
 #'   08/11/2026. <https://geosdot.servicios.gob.pe/consultas/#/circunscripcion>
 "geosdot_norms"
+
+#' Population of each district in each census, 1981-2025
+#'
+#' Population by sex and area of residence (urban/rural) of every district in
+#' the data of each census, with the census's own UBIGEO code and its link to
+#' the 2025 district. One row per district and census.
+#'
+#' Population is the enumerated population (*población censada*). Urban and
+#' rural follow INEI's classification of the populated place in each census.
+#' Notes by census:
+#' - **1981**: sample microdata, weighted by `PFACTEXP` and rounded, so the
+#'   counts are estimates. Apurímac, Loreto and San Martín are not in the
+#'   microdata (15.9 million people, against 17.0 million published). Codes are
+#'   the 1981 census's own.
+#' - **1993**: 22,010,683 people, 37,673 fewer than the published figure. 42
+#'   district names are inferred (see [ubigeo_crosswalk]).
+#' - **2007** and **2017**: full counts; totals match INEI (27,412,157 and
+#'   29,381,884). Urban/rural for 2017 uses `ENCAREA`, which reproduces INEI's
+#'   official urban total.
+#' - **2025**: REDATAM tables, 32,706,028 people. They follow the territorial
+#'   limits in force at 15/07/2026, so they include Sangani (Junín), created in
+#'   2026, which is not in the 2025 census frame (`inei` is `NA`). Lima codes
+#'   use REDATAM's departments 26 and 27 in `ubigeo_census`; `inei` has the
+#'   INEI code.
+#'
+#' To compare censuses on the same boundaries, aggregate by the `unit_YYYY`
+#' columns of [ubigeo_crosswalk], not by `inei`.
+#'
+#' @format A tibble with 8,898 rows and 11 variables:
+#' \describe{
+#'   \item{census}{Census year}
+#'   \item{ubigeo_census}{District code in that census}
+#'   \item{inei}{UBIGEO (INEI, 2025) of the linked 2025 district; `NA` if not
+#'     linked}
+#'   \item{department,province,district}{Names in that census}
+#'   \item{total}{Population}
+#'   \item{male,female}{Population by sex}
+#'   \item{urban,rural}{Population by area of residence}
+#' }
+#' @source Built by the package author from INEI census data: microdata of
+#'   the Censos Nacionales de Población y Vivienda 1981 (sample, weighted),
+#'   1993, 2007 and 2017, and the REDATAM district tables of the Censos
+#'   Nacionales 2025 (<https://redatamcpv2025.inei.gob.pe/>). Files and method:
+#'   `data-raw/census_population/` and its `README_crosswalk_ubigeo_2025.txt`.
+"census_population"
+
+#' Population of each province and department in each census, 1981-2025
+#'
+#' Province, department and national totals of [census_population], as built
+#' from the census data, with each census's own codes. In 2025 the department
+#' rows follow REDATAM: 26 = Región Lima, 27 = Lima Metropolitana.
+#'
+#' @format A tibble with 1,039 rows and 10 variables:
+#' \describe{
+#'   \item{census}{Census year}
+#'   \item{level}{`"province"`, `"department"` or `"national"`}
+#'   \item{code}{Province (4 digits) or department (2 digits) code in that
+#'     census; `"00"` for the national row}
+#'   \item{department,province}{Names in that census}
+#'   \item{total,male,female,urban,rural}{Population}
+#' }
+#' @source Built by the package author from INEI census data: microdata of
+#'   the Censos Nacionales de Población y Vivienda 1981 (sample, weighted),
+#'   1993, 2007 and 2017, and the REDATAM district tables of the Censos
+#'   Nacionales 2025 (<https://redatamcpv2025.inei.gob.pe/>). Files and method:
+#'   `data-raw/census_population/` and its `README_crosswalk_ubigeo_2025.txt`.
+"census_population_totals"
+
+#' Crosswalk of census district codes to the 2025 districts
+#'
+#' Links every district in the data of the 1981, 1993, 2007, 2017 and 2025
+#' censuses to a 2025 district, and gives, for every 2025 district, the
+#' district of each earlier census it descends from (`unit_YYYY`). One row per
+#' district and census.
+#'
+#' `inei` is a one-to-one "main successor" link: comparing censuses by `inei`
+#' overstates the early population of districts that later split. To compare
+#' two censuses on the same boundaries, aggregate both by the `unit_YYYY` of
+#' the earlier one.
+#'
+#' The parent of each district created after an earlier census
+#' (`parent_inei`) is **inferred from population** (see `parent_confidence`).
+#' `law_origins` gives, for comparison, the districts each one was carved from
+#' according to its creation law (INEI 2020/2022, [inei_district_origins]), and
+#' `parent_agrees_law` says whether the inferred parent is among them. They
+#' agree in 103 of 190 comparable cases. The `unit_YYYY` columns follow the
+#' inferred parents.
+#'
+#' @format A tibble with 8,898 rows and 22 variables:
+#' \describe{
+#'   \item{census}{Census year}
+#'   \item{ubigeo_census}{District code in that census (REDATAM code for 2025)}
+#'   \item{department,province,district}{Names in that census}
+#'   \item{population}{Population of the district in that census}
+#'   \item{inei}{UBIGEO (INEI) of the linked 2025 district; `NA` if not linked}
+#'   \item{department_2025,province_2025,district_2025}{Names of the 2025 district}
+#'   \item{method}{How the link was made: same code, same code with a different
+#'     name, name match, manual/inferred, unmatched, or 2025 district}
+#'   \item{note}{Evidence for renames and manual or inferred links}
+#'   \item{parent_inei}{For 2025 districts created after an earlier census: the
+#'     2025 district it was split from, inferred from population}
+#'   \item{created_after}{Last census before the district first appears}
+#'   \item{parent_confidence}{`manual`, `only candidate`, `high`, `medium` or
+#'     `low`}
+#'   \item{parent_evidence}{Details of the inference}
+#'   \item{law_origins}{Origin districts in the creation law (INEI codes,
+#'     separated by `;`)}
+#'   \item{parent_agrees_law}{`TRUE` if `parent_inei` is in `law_origins`;
+#'     `NA` if either is missing}
+#'   \item{unit_1981,unit_1993,unit_2007,unit_2017}{Harmonised unit: the 2025
+#'     code of the district of that census from which the row's 2025 district
+#'     descends}
+#' }
+#' @source Built by the package author from INEI census data: microdata of
+#'   the Censos Nacionales de Población y Vivienda 1981 (sample, weighted),
+#'   1993, 2007 and 2017, and the REDATAM district tables of the Censos
+#'   Nacionales 2025 (<https://redatamcpv2025.inei.gob.pe/>). Files and method:
+#'   `data-raw/census_population/` and its `README_crosswalk_ubigeo_2025.txt`.
+"ubigeo_crosswalk"

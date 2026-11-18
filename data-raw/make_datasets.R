@@ -10,6 +10,7 @@ source("data-raw/05_districts_2020_2025.R") # JNE (2021), Congreso (2025): dates
 source("data-raw/06_inei1997_departments.R") # INEI (1997): creation of departments
 source("data-raw/07_inei1997_new_units.R")   # INEI (1997): provinces and districts created 1990-97
 source("data-raw/08_geosdot.R")              # PCM-SDOT (GEOSDOT): instruments of creation and modification
+source("data-raw/09_census_population.R")    # Census population 1981-2025 and crosswalk to 2025 codes
 
 census_cut <- as.Date(c("1981" = "1981-07-12", "1993" = "1993-07-11",
                         "2007" = "2007-10-21", "2017" = "2017-10-22"))
@@ -167,6 +168,36 @@ for (k in seq_len(nrow(d21))) {
 message("Census presence reproduces INEI national counts for 1981, 1993, 2007 and 2017, ",
         "and national and department counts at 31/12/2021.")
 
+# ---- Districts in each census's own data (crosswalk) -----------------------
+# enumerated_YYYY: 1 if the census data have a record that the crosswalk links
+# to this 2025 district, 0 if not, NA where the census is not available (1981:
+# Apurímac, Loreto and San Martín). code_YYYY: the census's own code(s).
+not_in_1981 <- c("03", "16", "22")
+for (y in c(1981L, 1993L, 2007L, 2017L)) {
+  s <- ubigeo_crosswalk[ubigeo_crosswalk$census == y & !is.na(ubigeo_crosswalk$inei), ]
+  codes <- tapply(s$ubigeo_census, s$inei, function(v) paste(sort(unique(v)), collapse = ";"))
+  master[[paste0("code_", y)]] <- ifelse(master$level == "district", unname(codes[master$inei]), NA)
+  master[[paste0("enumerated_", y)]] <- ifelse(
+    master$level != "district", NA_integer_,
+    ifelse(y == 1981L & substr(master$inei, 1, 2) %in% not_in_1981, NA_integer_,
+           as.integer(master$inei %in% s$inei)))
+}
+master$enumerated_2025 <- ifelse(master$level == "district", 1L, NA_integer_)
+stopifnot(all(master$inei[master$level == "district"] %in%
+                ubigeo_crosswalk$inei[ubigeo_crosswalk$census == 2025]))
+# Where the census data disagree with the presence coded from creation dates
+census_vs_data <- do.call(rbind, lapply(c(1981L, 1993L, 2007L, 2017L), function(y) {
+  e <- master[[paste0("enumerated_", y)]]; f <- master[[paste0("census_", y)]]
+  k <- master$level == "district" & !is.na(e) & e != f
+  if (!any(k)) return(NULL)
+  data.frame(census = y, inei = master$inei[k], name = master$name[k],
+             census_flag = f[k], enumerated = e[k])
+}))
+message("Census data vs presence coded from creation dates: ",
+        paste(sprintf("%d: %d", c(1981L, 1993L, 2007L, 2017L),
+                      vapply(c(1981L, 1993L, 2007L, 2017L), function(y) sum(census_vs_data$census == y), 0L)),
+              collapse = "; "), " districts differ")
+
 # ---- Final tables ---------------------------------------------------------
 dept_name <- setNames(master$name, master$inei)
 master$department <- dept_name[paste0(substr(master$inei, 1, 2), "0000")]
@@ -184,7 +215,9 @@ provinces <- tibble::as_tibble(provinces[, c("inei", "department", "province", c
 
 districts <- master[master$level == "district", ]
 districts$district <- districts$name
-districts <- tibble::as_tibble(districts[, c("inei", "department", "province", "district", common)])
+districts <- tibble::as_tibble(districts[, c("inei", "department", "province", "district", common,
+                                             paste0("enumerated_", census_years),
+                                             paste0("code_", census_years[-5]))])
 
 usethis::use_data(departments, provinces, districts,
                   inei1997_departments, inei1997_provinces, inei1997_districts,
@@ -192,6 +225,7 @@ usethis::use_data(departments, provinces, districts,
                   division_counts, inei_provinces_created,
                   inei_districts_created, inei_district_origins,
                   districts_created_2020_2025,
+                  census_population, census_population_totals, ubigeo_crosswalk,
                   overwrite = TRUE, compress = "xz", version = 3)
 
 # CSV copies for non-R users
@@ -200,7 +234,8 @@ for (nm in c("departments", "provinces", "districts", "inei1997_departments",
              "inei1997_provinces", "inei1997_districts", "inei1999_districts", "geosdot_norms",
              "division_counts", "inei_provinces_created",
              "inei_districts_created", "inei_district_origins",
-             "districts_created_2020_2025")) {
+             "districts_created_2020_2025",
+             "census_population", "census_population_totals", "ubigeo_crosswalk")) {
   utils::write.csv(get(nm), file.path("inst", "extdata", paste0(nm, ".csv")),
                    row.names = FALSE, na = "", fileEncoding = "UTF-8")
 }

@@ -10,7 +10,7 @@ authors:
     given-names: "Alejandro"
     email: "alejandroperezportocarrero@gmail.com"
     affiliation: "University of Manchester"
-repository-code: "https://github.com/alejandroperezportocarrero/ubigeocensos"
+repository-code: "https://github.com/alejandroperezportocarrero/historic_ubigeo"
 keywords:
   - Peru
   - ubigeo
@@ -69,3 +69,13 @@ references:
     year: 2026
     date-accessed: "2026-11-08"
     url: "https://geosdot.servicios.gob.pe/consultas/#/circunscripcion"
+  - type: data
+    title: "Censos Nacionales de Población y Vivienda 1981, 1993, 2007 y 2017: microdatos"
+    authors:
+      - name: "Instituto Nacional de Estadística e Informática"
+  - type: database
+    title: "Censos Nacionales 2025. Sistema de Consulta de Base de Datos (REDATAM)"
+    authors:
+      - name: "Instituto Nacional de Estadística e Informática"
+    year: 2026
+    url: "https://redatamcpv2025.inei.gob.pe/"

@@ -1,13 +1,13 @@
 # ubigeocensos (R package)
 
-Departments, provinces and districts of Peru in the 1981, 1993, 2007, 2017 and 2025 population censuses, with their UBIGEO code and date of creation.
+Departments, provinces and districts of Peru across the 1981, 1993, 2007, 2017 and 2025 population censuses: their UBIGEO code in each census and in 2025, their date and legal instrument of creation, their population by sex and area (urban/rural) in each census, and a crosswalk to compare censuses on the same boundaries.
 
 ## Installation
 
 This package is not on CRAN. You can install it with `devtools`:
 
 ```r
-devtools::install_github("alejandroperezportocarrero/ubigeocensos")
+devtools::install_github("alejandroperezportocarrero/historic_ubigeo")
 ```
 
 ## Note
@@ -21,7 +21,9 @@ Peru's political-administrative division has changed a lot over the last four de
 The package uses the units of the **2025 Census** as its reference frame and their INEI UBIGEO as the identifier. For each unit it records:
 
 - **Date and legal instrument of creation**: the law, decree or regional law that created the unit, or whether it dates from the Independence era.
-- **Presence in each census**: whether the unit existed at the date of the 1981, 1993, 2007, 2017 and 2025 censuses. This coding reproduces exactly INEI's national counts of provinces and districts for every census, and its department counts at 31/12/2021.
+- **Presence in each census**: whether the unit existed at the date of the 1981, 1993, 2007, 2017 and 2025 censuses, inferred from the creation dates. This coding reproduces exactly INEI's national counts of provinces and districts for every census, and its department counts at 31/12/2021.
+- **The district in each census's own data**: whether each census's data have a record for the district (`enumerated_YYYY`), with the census's own code (`code_YYYY`), from the census microdata (1981–2017) and REDATAM tables (2025).
+- **Population in each census**: total, male, female, urban and rural population of every district, province and department (`census_population`, `census_population_totals`), and a crosswalk that links each census district to the 2025 districts and gives harmonised units to compare censuses on the same boundaries (`ubigeo_crosswalk`).
 
 The construction steps and sources are documented in the vignette `vignette("construction", package = "ubigeocensos")`.
 
@@ -34,7 +36,8 @@ The construction steps and sources are documented in the vignette `vignette("con
 | 3 | Presence in the 1981, 1993, 2007 and 2017 censuses | ✅ (matches INEI national counts, and department counts at 31/12/2021) |
 | 4 | Territorial origin of districts created 1981–2021 | ✅ (`inei_district_origins`) |
 | 5 | Creation dates of units that existed before 1981 | ✅ From PCM-SDOT (GEOSDOT), 1,511 districts and 152 provinces; disagreements with INEI noted in `note` |
-| 6 | Crosswalk for recoded units, checked against each census's UBIGEO list | ⏳ |
+| 6 | Census district lists, population by sex and area, and crosswalk of census codes to 2025 | ✅ 1981 (sample, without Apurímac, Loreto and San Martín), 1993, 2007, 2017 and 2025 |
+| 7 | Parents of new districts from creation laws in the crosswalk's harmonised units | 🔄 Inferred parents agree with the law in 103 of 190 cases (`parent_agrees_law`) |
 
 ## Data structure
 
@@ -72,6 +75,37 @@ The department count (25) includes the Constitutional Province of Callao (`07000
 | province | Name of the province |
 | district | Name of the district |
 | created_date … census_2025 | As for departments |
+| enumerated_1981 … enumerated_2025 | 1 if that census's data have a record linked to the district, 0 if not, `NA` where the census is not available (1981: Apurímac, Loreto, San Martín) |
+| code_1981 … code_2017 | UBIGEO code(s) used by that census for the district |
+
+### Census population (`census_population`)
+
+One row per district and census.
+
+| Field | Description |
+|---|---|
+| census | Census year (1981, 1993, 2007, 2017, 2025) |
+| ubigeo_census | District code in that census |
+| inei | UBIGEO (INEI, 2025) of the linked 2025 district |
+| department, province, district | Names in that census |
+| total | Population (*población censada*) |
+| male, female | Population by sex |
+| urban, rural | Population by area of residence (INEI's classification of the populated place) |
+
+`census_population_totals` has the province, department and national rows of each census. The 1981 data are a weighted sample of the census and leave out Apurímac, Loreto and San Martín.
+
+### Crosswalk (`ubigeo_crosswalk`)
+
+One row per district and census. It links each census district to a 2025 district (`inei`) and, for every 2025 district, gives the district of each earlier census it descends from (`unit_1981` … `unit_2017`). To compare two censuses on the same boundaries, aggregate both by the `unit_YYYY` of the earlier one:
+
+```r
+library(ubigeocensos)
+x <- merge(ubigeo_crosswalk, census_population, by = c("census", "ubigeo_census"))
+x <- subset(x, census %in% c(1993, 2017))
+aggregate(total ~ unit_1993 + census, data = x, FUN = sum)
+```
+
+The parents of new districts are inferred from population (`parent_confidence`); `law_origins` and `parent_agrees_law` compare them with the creation laws.
 
 ### Legal creation of districts, INEI 1999 (`inei1999_districts`)
 
@@ -106,6 +140,8 @@ The source table, parsed and matched to the 2025 UBIGEO.
 | `inei_district_origins` | Districts each new district was carved from ("procedencia territorial") | INEI 2020; INEI 2022 |
 | `geosdot_norms` | 4,788 legal instruments of creation, modification and cancellation of 2,091 departments, provinces and districts | PCM-SDOT (GEOSDOT) |
 | `districts_created_2020_2025` | 18 districts created 2020–2025: law, exact date | JNE 2021; Congreso 2025 |
+| `census_population`, `census_population_totals` | Population by sex and area of every district, province and department in each census, 1981–2025 | INEI census microdata (1981–2017) and REDATAM (2025) |
+| `ubigeo_crosswalk` | Census district codes linked to the 2025 districts, with harmonised units | Built from the census data |
 
 Census presence refers to the unit as identified in 2025. A district later split from another still counts as present in earlier censuses, with a larger territory; units abolished before 2025 are not included. See `vignette("construction", package = "ubigeocensos")`.
 
@@ -124,6 +160,7 @@ devtools::document()
 - **INEI 1999**: Instituto Nacional de Estadística e Informática (1999). *Perú: Directorio Nacional de Municipalidades Provinciales y Distritales 1999*. Lima: INEI. <https://proyectos.inei.gob.pe/web/biblioineipub/bancopub/Est/Lib0362/indice.htm>
 - **INEI 2020**: Instituto Nacional de Estadística e Informática (2020). *Perú: Proyecciones de Población por Departamento, Provincia y Distrito, 2018 - 2020*. Boletín Especial Nº 26. Lima: INEI. Chapter 2, "División política y administrativa al 31 de diciembre del 2019". <https://www.inei.gob.pe/media/MenuRecursivo/publicaciones_digitales/Est/Lib1715/libro.pdf>
 - **INEI 2022**: Instituto Nacional de Estadística e Informática (2022). *Perú: Proyecciones de Población Total según Departamento, Provincia y Distrito, 2018 – 2022*. Boletín Especial Nº 27. Lima: INEI. Anexo 2, "División política y administrativa al 31 de diciembre de 2021". <https://www.inei.gob.pe/media/MenuRecursivo/publicaciones_digitales/Est/Lib1860/libro.pdf>
+- **Census data**: Instituto Nacional de Estadística e Informática. Microdata of the Censos Nacionales de Población y Vivienda 1981 (sample), 1993, 2007 (XI de Población y VI de Vivienda) and 2017 (XII de Población, VII de Vivienda y III de Comunidades Indígenas); Censos Nacionales 2025, REDATAM district tables (<https://redatamcpv2025.inei.gob.pe/>). Population files and crosswalk built by the author; see `data-raw/census_population/README_crosswalk_ubigeo_2025.txt`.
 - **GEOSDOT**: Presidencia del Consejo de Ministros, Secretaría de Demarcación y Organización Territorial (2026). *Sistema de consultas de información de naturaleza demarcatoria (GEOSDOT)*, módulo Circunscripciones. Consulted on 08/11/2026. <https://geosdot.servicios.gob.pe/consultas/#/circunscripcion>
 - **JNE 2021**: Jurado Nacional de Elecciones (2021). *Resolución N.° 0913-2021-JNE*, 22 de noviembre de 2021. <https://portal.jne.gob.pe/portal_documentos/files/72803f45-044d-4c92-841b-6b2dbe8efc0a.pdf>
 - **Congreso 2025**: Congreso de la República (2025). *Leyes de creación de distritos*. Área de Estadística Parlamentaria. <https://www.congreso.gob.pe/Docs/DGP/GestionInformacionEstadistica/files/publicaciones-25/leyes-declarativas-creaci%C3%93n-distritos.pdf>

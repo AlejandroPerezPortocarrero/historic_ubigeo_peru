@@ -10,6 +10,8 @@
 #' [inei_provinces_created], [inei_districts_created],
 #' [inei_district_origins], [districts_created_2020_2025],
 #' [geosdot_norms].
+#' Census data: [census_population], [census_population_totals],
+#' [ubigeo_crosswalk].
 #'
 #' @keywords internal
 "_PACKAGE"

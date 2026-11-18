@@ -32,6 +32,7 @@ The datasets are built by `data-raw/make_datasets.R`, which runs the scripts in 
 | JNE 2021 | Jurado Nacional de Elecciones, Resolución N.° 0913-2021-JNE | Exact dates of the 16 districts created 2020–2021 | `post2019/districts_created_2020_2025.csv` |
 | Congreso 2025 | Congreso de la República, *Leyes de creación de distritos* | Alto Trujillo (2022) and Santa Rosa de Loreto (2025) | `post2019/districts_created_2020_2025.csv` |
 | GEOSDOT | PCM–SDOT, *Sistema de consultas de información de naturaleza demarcatoria* (GEOSDOT) | Instrument of creation, and later modifications, of 2,091 departments, provinces and districts; fills the units no other source covers | `geosdot/geosdot_normas.tsv` |
+| Census data | INEI, census microdata 1981 (sample), 1993, 2007, 2017; REDATAM 2025 | Population by sex and area of every district in each census; census codes and crosswalk to 2025 | `census_population/` |
 
 ## INEI (1997): Compendio Estadístico 1996-97
 
@@ -230,14 +231,77 @@ The differences cancel out across departments and come from two causes:
 
 **Interpretation.** `census_YYYY` refers to the unit as identified in 2025. A district that was later split still counts as present in earlier censuses, but with a larger territory; `inei_district_origins` identifies those parent districts. Units abolished before 2025 are not in the frame.
 
+# Step 4: the census data
+
+## Population and crosswalk
+
+`census_population` has the population of every district in each census, by sex and area of residence (urban/rural), with the census's own code. `census_population_totals` has the province, department and national rows. `ubigeo_crosswalk` links each census district to a 2025 district and gives harmonised units to compare censuses on the same boundaries. They were built by the author from the census microdata of 1981 (a weighted sample, without Apurímac, Loreto and San Martín), 1993, 2007 and 2017, and from the REDATAM district tables of 2025. The method is documented in `data-raw/census_population/README_crosswalk_ubigeo_2025.txt`.
+
+```{r census_totals}
+nat <- subset(census_population_totals, level == "national")
+data.frame(census = nat$census,
+           districts = as.vector(table(census_population$census)),
+           population = nat$total, male = nat$male, female = nat$female,
+           urban = nat$urban, rural = nat$rural)
+```
+
+The build checks that male + female and urban + rural equal the total for every district; that districts, provinces and departments add up to the same national total; and that the crosswalk and the population files agree row by row. The 2007 and 2017 totals match INEI's published *población censada*. The 2025 REDATAM tables follow the limits in force at 15/07/2026 and include Sangani (Junín), created in 2026, which is not in the 2025 frame. In 2025 REDATAM codes Lima as departments 26 (Región Lima) and 27 (Lima Metropolitana); `inei` uses INEI's codes (15).
+
+## Districts in each census's data
+
+`enumerated_YYYY` in `districts` says whether the census data have a district record linked to each 2025 district, and `code_YYYY` gives the census's own code. This tests the presence inferred from creation dates (Step 3) against the census itself:
+
+```{r enumerated_vs_flags}
+cmp <- do.call(rbind, lapply(c(1981, 1993, 2007, 2017), function(y) {
+  e <- districts[[paste0("enumerated_", y)]]; f <- districts[[paste0("census_", y)]]
+  data.frame(census = y, compared = sum(!is.na(e)), agree = sum(e == f, na.rm = TRUE),
+             differ = sum(e != f, na.rm = TRUE))
+}))
+cmp
+```
+
+The two agree for every district in 2017. The differences in the other censuses are:
+
+```{r enumerated_differences}
+d <- do.call(rbind, lapply(c(1981, 1993, 2007), function(y) {
+  e <- districts[[paste0("enumerated_", y)]]; f <- districts[[paste0("census_", y)]]
+  k <- !is.na(e) & e != f
+  data.frame(census = rep(y, sum(k)), inei = districts$inei[k], district = districts$district[k],
+             existed = f[k], in_census_data = e[k])
+}))
+d[!(d$census == 1981 & substr(d$inei, 1, 4) == "1510"), ]
+```
+
+- **Yauyos, 1981** (24 districts, not shown above). The 1981 name table gives Yauyos the district names of Huarochirí, so its 1981 districts cannot be told apart. The crosswalk treats the whole province as one unit.
+- **Ubinas, 1981.** It existed in 1981 but has no own record in the 1981 sample data.
+- **Carmen Alto, 2007.** It is missing from the 2007 microdata; its population is counted under Ayacucho.
+- **Bagua and La Peca.** By law (Ley 28884, 2006), Bagua was created from La Peca, so La Peca is the district that existed before. The crosswalk instead treats the earlier La Peca, whose capital was the city of Bagua, as today's Bagua (010201), because it keeps the code and most of the population. Neither choice changes any population figure; they label the successor differently.
+- **Code 160111, 1993.** The crosswalk links it, with low confidence, to Teniente Manuel Clavero. That district was created in 2004 (Ley 28362), so it cannot be in the 1993 census. The evidence points to **Yaquerana**: it existed since 1943, it is the only 1993 district without a record, its 2007 population (2,396) is close to that of 160111 in 1993 (1,618), code 11 follows Torres Causana (10) in the alphabetical order of Maynas, code 160111 is no longer used in 2007, and Ley 27195 (1999), which reorganised Maynas, modifies Yaquerana (GEOSDOT). Yaquerana appears in Requena (160511) from 2007.
+
+## Parents of new districts: population against the creation laws
+
+The crosswalk infers the parent of each new district from population (the district of the same province whose growth fell short by about the new district's population). The creation laws give the territorial origin directly (INEI 2020/2022, `inei_district_origins`), so the two can be compared:
+
+```{r parents_vs_law}
+p <- subset(ubigeo_crosswalk, census == 2025 & !is.na(parent_inei))
+table(confidence = p$parent_confidence,
+      agrees_with_law = ifelse(is.na(p$parent_agrees_law), "no law data", p$parent_agrees_law))
+```
+
+They agree in 103 of the 190 comparable cases. Most disagreements are within a province (for example, by law Kimbiri was created from Echarate, and Huipoca and Boquerón from Padre Abad). Some are "only candidate" cases whose origin was then in another province (Calamarca and Huaso were created from Quiruvilca, in Santiago de Chuco). Because the harmonised units (`unit_YYYY`) follow the inferred parents, the comparisons they give are approximate for the units involved. Districts created from parts of several districts are assigned to one parent in any case.
+
 # Pending
 
-1. Resolve the disagreements between sources recorded in `note`, going back to the laws themselves (GEOSDOT links to the scanned text of most of them).
-2. Check presence against the UBIGEO lists of each census (2017, 2007, 1993, 1981) and build a crosswalk of codes that changed.
+1. Rebuild the crosswalk's parents and harmonised units from the creation laws where they are available, and fix code 160111 in 1993 (Yaquerana).
+2. Resolve the disagreements between sources recorded in `note`, going back to the laws themselves (GEOSDOT links to the scanned text of most of them).
 
 # References
 
 Congreso de la República (2025). *Leyes de creación de distritos*. Lima: Área de Estadística Parlamentaria. <https://www.congreso.gob.pe/Docs/DGP/GestionInformacionEstadistica/files/publicaciones-25/leyes-declarativas-creaci%C3%93n-distritos.pdf>
+
+Instituto Nacional de Estadística e Informática. *Censos Nacionales de Población y Vivienda 1981, 1993, 2007 y 2017*, microdatos. Lima: INEI.
+
+Instituto Nacional de Estadística e Informática (2026). *Censos Nacionales 2025. Sistema de Consulta de Base de Datos (REDATAM)*. <https://redatamcpv2025.inei.gob.pe/>
 
 Instituto Nacional de Estadística e Informática (1997). *Compendio Estadístico 1996-97*. Lima: INEI. Cuadros 1.16, 1.18 and 1.19. <https://proyectos.inei.gob.pe/web/biblioineipub/bancopub/Est/LIB0170/n00.htm>
 

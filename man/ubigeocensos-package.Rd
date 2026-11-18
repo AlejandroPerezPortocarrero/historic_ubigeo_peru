@@ -17,12 +17,14 @@ Source tables: \link{inei1997_departments}, \link{inei1997_provinces},
 \link{inei_provinces_created}, \link{inei_districts_created},
 \link{inei_district_origins}, \link{districts_created_2020_2025},
 \link{geosdot_norms}.
+Census data: \link{census_population}, \link{census_population_totals},
+\link{ubigeo_crosswalk}.
 }
 \seealso{
 Useful links:
 \itemize{
-  \item \url{https://github.com/alejandroperezportocarrero/ubigeocensos}
-  \item Report bugs at \url{https://github.com/alejandroperezportocarrero/ubigeocensos/issues}
+  \item \url{https://github.com/alejandroperezportocarrero/historic_ubigeo}
+  \item Report bugs at \url{https://github.com/alejandroperezportocarrero/historic_ubigeo/issues}
 }
 
 }
