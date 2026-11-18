@@ -3,6 +3,7 @@ message: "If you use this dataset, please cite it as below."
 type: dataset
 title: "historic_ubigeo_peru (R package historicubigeo): Peruvian Territorial Units in the 1981-2025 Population Censuses"
 version: 1.0.0
+doi: "10.5281/zenodo.24353044"
 date-released: 2026-11-18
 license: MIT
 authors:
@@ -11,6 +12,10 @@ authors:
     email: "alejandroperezportocarrero@gmail.com"
     affiliation: "University of Manchester"
 repository-code: "https://github.com/AlejandroPerezPortocarrero/historic_ubigeo_peru"
+identifiers:
+  - type: doi
+    value: "10.5281/zenodo.24353044"
+    description: "Concept DOI (resolves to the latest version)"
 keywords:
   - Peru
   - ubigeo

@@ -1,5 +1,7 @@
 # historic_ubigeo_peru (R package historicubigeo): Peruvian Territorial Units in the 1981-2025 Population Censuses
 
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.24353044.svg)](https://doi.org/10.5281/zenodo.24353044)
+
 Departments, provinces and districts of Peru across the 1981, 1993, 2007, 2017 and 2025 population censuses: their UBIGEO code in each census and in 2025, their date and legal instrument of creation, their population by sex and area (urban/rural) in each census, and a crosswalk to compare censuses on the same boundaries.
 
 ## Installation
@@ -175,6 +177,8 @@ packageVersion("historicubigeo")
 ```
 
 Please cite the version you used. `citation("historicubigeo")` gives the reference, and GitHub's "Cite this repository" button uses [`CITATION.cff`](CITATION.cff).
+
+Each release is archived on Zenodo. The DOI [10.5281/zenodo.24353044](https://doi.org/10.5281/zenodo.24353044) always resolves to the latest version; the Zenodo record lists a separate DOI for each version, which is the one to cite for exact reproducibility.
 
 ## License
 

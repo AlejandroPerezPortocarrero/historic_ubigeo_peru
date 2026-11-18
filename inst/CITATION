@@ -5,10 +5,11 @@ bibentry(
   year = "2026",
   note = "R package and dataset, version 1.0.0",
   url = "https://github.com/AlejandroPerezPortocarrero/historic_ubigeo_peru",
+  doi = "10.5281/zenodo.24353044",
   textVersion = paste(
     "Pérez Portocarrero, A. (2026).",
     "historic_ubigeo_peru (R package historicubigeo): Peruvian Territorial Units",
     "in the 1981-2025 Population Censuses. Version 1.0.0.",
-    "https://github.com/AlejandroPerezPortocarrero/historic_ubigeo_peru"
+    "https://doi.org/10.5281/zenodo.24353044"
   )
 )
