@@ -1,4 +1,4 @@
-# ubigeocensos (R package)
+# historic_ubigeo (R package `ubigeocensos`)
 
 Departments, provinces and districts of Peru across the 1981, 1993, 2007, 2017 and 2025 population censuses: their UBIGEO code in each census and in 2025, their date and legal instrument of creation, their population by sex and area (urban/rural) in each census, and a crosswalk to compare censuses on the same boundaries.
 
