@@ -4,6 +4,8 @@
 
 Departments, provinces and districts of Peru across the 1981, 1993, 2007, 2017 and 2025 population censuses: their UBIGEO code in each census and in 2025, their date and legal instrument of creation, their population by sex and area (urban/rural) in each census, and a crosswalk to compare censuses on the same boundaries.
 
+![Districts of Peru in each population census](man/figures/districts_by_census.png)
+
 ## Installation
 
 This package is not on CRAN. You can install it with `devtools`:
