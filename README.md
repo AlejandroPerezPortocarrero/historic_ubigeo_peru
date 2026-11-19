@@ -29,17 +29,13 @@ The package uses the units of the **2025 Census** as its reference frame and the
 
 The construction steps and sources are documented in the vignette `vignette("construction", package = "historicubigeo")`.
 
-## Status
+## Coverage and known limitations
 
-| Step | Description | Status |
-|---|---|---|
-| 1 | Units in the 2025 Census (25 departments, 196 provinces, 1,892 districts) | ✅ |
-| 2 | Creation date and legal instrument | ✅ All units but four (Callao province; Urcos, Anco and Magdalena de Cao districts), from INEI 1997–2022, JNE, Congreso and PCM-SDOT (GEOSDOT) |
-| 3 | Presence in the 1981, 1993, 2007 and 2017 censuses | ✅ (matches INEI national counts, and department counts at 31/12/2021) |
-| 4 | Territorial origin of districts created 1981–2021 | ✅ (`inei_district_origins`) |
-| 5 | Creation dates of units that existed before 1981 | ✅ From PCM-SDOT (GEOSDOT), 1,511 districts and 152 provinces; disagreements with INEI noted in `note` |
-| 6 | Census district lists, population by sex and area, and crosswalk of census codes to 2025 | ✅ 1981 (sample, without Apurímac, Loreto and San Martín), 1993, 2007, 2017 and 2025 |
-| 7 | Parents of new districts from creation laws in the crosswalk's harmonised units | ✅ 191 of 195 from the law (4 created after 2021 or identity cases inferred); main and strict units |
+- **Units:** all 25 departments, 196 provinces and 1,892 districts of the 2025 Census.
+- **Creation data:** date and legal instrument for every unit except four (Callao province; Urcos, Anco and Magdalena de Cao districts), from INEI 1997–2022, JNE, Congreso and PCM-SDOT (GEOSDOT). Where sources disagree, this is recorded in `note`.
+- **Census presence:** reproduces INEI's national counts of provinces and districts for every census, and its department counts at 31/12/2021.
+- **Population and crosswalk:** 1993, 2007, 2017 and 2025 are complete. 1981 is a weighted sample and leaves out Apurímac, Loreto and San Martín.
+- **Parents of new districts:** 191 of 195 come from the creation laws. Four are inferred: three districts created after 2021, and La Peca, an identity case.
 
 ## Data structure
 
